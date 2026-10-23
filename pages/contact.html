@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact | Surani Jewellers & Sons</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="../index.html" class="logo">Surani <span>Jewellers</span> & Sons</a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="../index.html" class="btn-outline">Back to Home</a>
+    </div>
+  </nav>
+
+  <section style="padding-top:8rem;">
+    <div class="section-header">
+      <span class="section-tag">Get in Touch</span>
+      <h2 class="section-title">Contact Surani Jewellers</h2>
+      <p class="section-desc">Wholesale enquiries, custom orders, or retail purchases — we respond within 24 hours.</p>
+    </div>
+    
+    <div class="glass-card" style="max-width:600px;margin:0 auto;padding:2.5rem;">
+      <form onsubmit="event.preventDefault();alert('Thank you! Our team will contact you shortly.');">
+        <div style="margin-bottom:1.2rem;">
+          <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary);">Full Name</label>
+          <input type="text" required style="width:100%;padding:0.8rem;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:4px;color:var(--text-primary);font-size:1rem;">
+        </div>
+        <div style="margin-bottom:1.2rem;">
+          <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary);">Email</label>
+          <input type="email" required style="width:100%;padding:0.8rem;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:4px;color:var(--text-primary);font-size:1rem;">
+        </div>
+        <div style="margin-bottom:1.2rem;">
+          <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary);">Phone / WhatsApp</label>
+          <input type="tel" style="width:100%;padding:0.8rem;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:4px;color:var(--text-primary);font-size:1rem;">
+        </div>
+        <div style="margin-bottom:1.2rem;">
+          <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary);">Enquiry Type</label>
+          <select style="width:100%;padding:0.8rem;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:4px;color:var(--text-primary);font-size:1rem;">
+            <option>Wholesale / Bulk Order</option>
+            <option>Retail Purchase</option>
+            <option>Custom Design</option>
+            <option>Loose Diamonds</option>
+            <option>Investment / Partnership</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div style="margin-bottom:1.5rem;">
+          <label style="display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary);">Message</label>
+          <textarea rows="4" style="width:100%;padding:0.8rem;background:rgba(255,255,255,0.05);border:1px solid var(--border-glass);border-radius:4px;color:var(--text-primary);font-size:1rem;resize:vertical;"></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Send Enquiry</button>
+      </form>
+    </div>
+    
+    <div style="text-align:center;margin-top:3rem;color:var(--text-secondary);">
+      <p><i class="fas fa-envelope"></i> enquiries@suranijewellers.com</p>
+      <p style="margin-top:0.5rem;"><i class="fas fa-phone"></i> +91 XXXXX XXXXX (WhatsApp available)</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom"><p>© 2026 Surani Jewellers & Sons</p></div>
+  </footer>
+</body>
+</html>
