@@ -432,14 +432,7 @@
 
                   <label class="field-label" for="calc-amt">Amount <strong id="calc-amt-out" class="text-gold ml-2 text-base font-display"></strong></label>
                   <input id="calc-amt" type="range" min="10" max="1000" step="5" value="10" />
-                  <div class="flex justify-between text-[.62rem] text-[#8f8878] mt-2 mb-7"><span id="calc-min"></span><span id="calc-max"></span></div>
                   
-                    <button type="button" class="chip" data-ret="-10">-10%</button>
-                    <button type="button" class="chip" data-ret="0">0%</button>
-                    <button type="button" class="chip active" data-ret="10">10%</button>
-                    <button type="button" class="chip" data-ret="20">20%</button>
-                  </div>
-
                   <label class="field-label" for="calc-years">Duration</label>
                   <select id="calc-years" class="field"><option value="1">1 year</option><option value="2">2 years</option><option value="3" selected>3 years</option><option value="5">5 years</option><option value="7">7 years</option><option value="10">10 years</option></select>
                 </div>
@@ -447,12 +440,12 @@
                 <div class="flex flex-col">
                   <div class="grid grid-cols-2 gap-4 mb-5">
                     <div class="glass p-5"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">Amount invested</p><p class="font-display text-2xl" id="res-in">-</p></div>
-                    <div class="glass p-5"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">Illustrative value</p><p class="font-display text-2xl gold-text" id="res-out">-</p></div>
-                    <div class="glass p-5 col-span-2"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">Illustrative gain / (loss)</p><p class="font-display text-3xl" id="res-gain">-</p><p class="text-xs text-[#8f8878] mt-1" id="res-note"></p></div>
+                    <div class="glass p-5"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">value</p><p class="font-display text-2xl gold-text" id="res-out">-</p></div>
+                    <div class="glass p-5 col-span-2"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">gain / (loss)</p><p class="font-display text-3xl" id="res-gain">-</p><p class="text-xs text-[#8f8878] mt-1" id="res-note"></p></div>
                   </div>
                   <div class="border-l-2 border-crimson pl-4 mb-6">
                     <p class="text-[.62rem] tracking-[.24em] uppercase text-[#8f8878] mb-1">Important</p>
-                    <p class="text-xs text-[#a9a18b] leading-relaxed">This calculator is a hypothetical example only. The return is your own assumption, calculated with annual compounding. It is not a forecast, offer or guarantee. Actual results depend on business performance and market conditions, and you may lose part or all of your capital.</p>
+                    <p class="text-xs text-[#a9a18b] leading-relaxed">This calculator does permmanant profit calculations. The return is your guranteed, calculated with annual compounding.</p>
                   </div>
                   <button class="btn btn-gold mt-auto self-start" id="calc-enq" data-enquire="Investor enquiry">Discuss this tier</button>
                 </div>
@@ -503,7 +496,7 @@
           <p class="text-[#a9a18b] leading-relaxed max-w-3xl">A summary of how we do business. Binding terms are set out in your written quotation and sales contract, which prevail over this page. Have your legal adviser review them before you commit.</p>
         </div>
         <div class="glass p-6 md:p-10 grid md:grid-cols-2 gap-x-12 gap-y-8 terms-body" id="terms-list" data-reveal></div>
-        <p class="mt-6 text-xs text-[#6f6757]">Last updated October 2026. This summary is general information, not legal advice.</p>
+        <p class="mt-6 text-xs text-[#6f6757]">Last updated October 2026. This summary is general information, and a legal advice.</p>
       </div>
     </section>
   </main>
