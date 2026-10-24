@@ -894,10 +894,10 @@ function initInvest() {
   } catch (e) { sel.value = '0'; }
 
   // Currency conversion fix: Dividing INR by currency rate properly
-  const money = (inr, compact) => {
+   const money = (inr, compact) => {
     const v = inr / cur.rate;
     try { 
-      return new Intl.NumberFormat(cur.loc, { 
+      return new Intl.NumberFormat('en-US', { // 'de-DE' ki jagah 'en-US' kar diya taaki dot ki jagah comma aaye
         style: 'currency', 
         currency: cur.cur, 
         maximumFractionDigits: 0, 
