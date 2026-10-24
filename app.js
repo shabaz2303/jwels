@@ -910,49 +910,20 @@ function initInvest() {
         <button class="btn btn-ghost btn-sm self-start inv-enq" data-enquire="Investor enquiry — ${t.name} tier (${fmtInr(t.lakh)} / ${money(t.lakh * 1e5)}) · ${cur.c}">Enquire</button>
       </article>`).join('');
   };
-   
-const calc = () => {
-    // Input values lena
-    let lakh = +$('#calc-amt').value;
-    
-    // --- RULE: Minimum 10 Lakhs restriction ---
-    if (lakh < 10) {
-        lakh = 10; // Minimum limit 10 lakh set kar diya
-        if ($('#calc-amt')) $('#calc-amt').value = 10; // Input field ko bhi 10 kar dega
-    }
 
-    const r = +$('#calc-ret').value, y = +$('#calc-years').value;
-    const inr = lakh * 1e5;
-    
-    // Standard compound growth calculation
-    const end = inr * Math.pow(1 + r / 100, y);
-    const gain = end - inr;
-
-    // Monthly Payout / Return calculation (Total gain ka monthly average)
-    const totalMonths = y * 12;
-    const monthlyPayout = totalMonths > 0 ? gain / totalMonths : 0;
-
-    // UI Updates
+  const calc = () => {
+    const lakh = +$('#calc-amt').value, r = +$('#calc-ret').value, y = +$('#calc-years').value;
+    const inr = lakh * 1e5, end = inr * Math.pow(1 + r / 100, y), gain = end - inr;
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
     $('#calc-ret-out').textContent = (r > 0 ? '+' : '') + r + '% / year';
     $('#res-in').textContent = money(inr, true);
     $('#res-out').textContent = money(end, true);
-    
-    // Agar aapke HTML me monthly payout dikhane ke liye koi alag element hai (jaise #res-monthly):
-    if ($('#res-monthly')) {
-        $('#res-monthly').textContent = money(monthlyPayout, true);
-    }
-
-    const g = $('#res-gain'); 
-    g.textContent = (gain < 0 ? '(' + money(-gain, true) + ')' : money(gain, true));
+    const g = $('#res-gain'); g.textContent = (gain < 0 ? '(' + money(-gain, true) + ')' : money(gain, true));
     g.style.color = gain < 0 ? '#ff8a8a' : gain > 0 ? '#6ee7a8' : '#f5efe0';
-    
-    // Note me monthly payout clearly dikhega
-    $('#res-note').textContent = `Hypothetical: ${r}% p.a. over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
+    $('#res-note').textContent = `Hypothetical: ${r}% p.a. compounded annually over ${y} year${y > 1 ? 's' : ''}. Not a forecast.`;
     $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
     $$('#calc-presets .chip').forEach(c => c.classList.toggle('active', +c.dataset.ret === r));
-};
-
+  };
 
   const apply = () => {
     cur = INVEST_COUNTRIES[+sel.value];
