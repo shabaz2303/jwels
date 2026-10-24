@@ -11,19 +11,19 @@
 // instead (Formspree, Web3Forms, etc.), swap submitEnquiry() below.
 const CONFIG = {
   brand: 'Surani & Sons',
-  email: 'sales@suranijwelsanddiamonds.online'
+  email: 'enquiries@suranisons.example'
 };
 
 /* ------------------------------ HELPERS ------------------------------ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
-const hasGSAP = typeof window.gsap !== 'undefined';
+let hasGSAP = typeof window.gsap !== 'undefined';
 const reduceMotion = false; // animations always on (OS 'reduce motion' setting is ignored on purpose)
 const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const state = { mode: 'retail', cat: null, mat: null, origin: 'all', shape: null, colorTab: 'all', clarityTab: 'all' };
 
 const unsplash = (id, w = 800) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
-const GEM_FALLBACK = `<svg width="64" height="64" viewBox="0 0 100 100" opacity=".5"><polygon points="28,14 72,14 94,40 50,92 6,40" fill="none" stroke="#d4af37" stroke-width="3" stroke-linejoin="round"/><polyline points="6,40 94,40 M28,14 40,40 50,92 60,40 72,14" fill="none" stroke="#d4af37" stroke-width="2" stroke-linejoin="round"/></svg>`;
+const GEM_FALLBACK = `<svg width="64" height="64" viewBox="0 0 100 100" opacity=".5"><polygon points="28,14 72,14 94,40 50,92 6,40" fill="none" stroke="#d4af37" stroke-width="3" stroke-linejoin="round"/><path d="M6,40 L94,40 M28,14 L40,40 L50,92 L60,40 L72,14" fill="none" stroke="#d4af37" stroke-width="2" stroke-linejoin="round"/></svg>`;
 
 function toast(msg) {
   const t = $('#toast');
@@ -76,24 +76,18 @@ const PRODUCTS = [
 ];
 
 const STONES = [
-  { id: 1, shape: 'Round', ct: 1.02, color: 'D', clarity: 'VVS1', origin: 'natural', cert: 'GIA' },
-  { id: 2, shape: 'Round', ct: 0.71, color: 'F', clarity: 'VS1', origin: 'lab', cert: 'IGI' },
-  { id: 3, shape: 'Oval', ct: 1.51, color: 'G', clarity: 'VS2', origin: 'natural', cert: 'GIA' },
-  { id: 4, shape: 'Oval', ct: 2.03, color: 'E', clarity: 'VS1', origin: 'lab', cert: 'IGI' },
-  { id: 5, shape: 'Princess', ct: 1.2, color: 'H', clarity: 'SI1', origin: 'natural', cert: 'GIA' },
-  { id: 6, shape: 'Cushion', ct: 3.01, color: 'F', clarity: 'VVS2', origin: 'lab', cert: 'IGI' },
-  { id: 7, shape: 'Emerald', ct: 2.1, color: 'G', clarity: 'IF', origin: 'natural', cert: 'GIA' },
-  { id: 8, shape: 'Asscher', ct: 1.75, color: 'E', clarity: 'VS2', origin: 'natural', cert: 'GIA' },
-  { id: 9, shape: 'Marquise', ct: 1.05, color: 'I', clarity: 'SI1', origin: 'natural', cert: 'IGI' },
-  { id: 10, shape: 'Pear', ct: 1.3, color: 'D', clarity: 'VS1', origin: 'lab', cert: 'IGI' },
-  { id: 11, shape: 'Radiant', ct: 2.52, color: 'J', clarity: 'VS2', origin: 'lab', cert: 'IGI' },
-  { id: 12, shape: 'Round', ct: 0.5, color: 'K', clarity: 'SI2', origin: 'natural', cert: 'GIA' },
-  { id: 13, shape: 'Cushion', ct: 1.12, color: 'Fancy Yellow', clarity: 'VS1', origin: 'natural', cert: 'GIA' },
-  { id: 14, shape: 'Pear', ct: 0.9, color: 'M', clarity: 'SI1', origin: 'natural', cert: 'IGI' },
-  { id: 15, shape: 'Princess', ct: 2.0, color: 'F', clarity: 'VVS1', origin: 'lab', cert: 'IGI' },
-  { id: 16, shape: 'Emerald', ct: 1.4, color: 'D', clarity: 'FL', origin: 'natural', cert: 'GIA' },
-  { id: 17, shape: 'Oval', ct: 0.8, color: 'H', clarity: 'VS2', origin: 'natural', cert: 'GIA' },
-  { id: 18, shape: 'Round', ct: 4.01, color: 'G', clarity: 'VVS2', origin: 'lab', cert: 'IGI' }
+  { id: 1, name: 'Aurora Round', shape: 'Round', ct: 1.02, mm: '6.45 × 6.48 × 3.98', lw: '1.00', color: 'D', clarity: 'VVS1', origin: 'natural', cert: 'GIA', cut: 'Excellent', polish: 'EX', sym: 'EX', fluor: 'None', type: 'Type IIa', table: '58%', depth: '61.6%', girdle: 'Medium', tint: 'white', rt: 'Prestige', wt: 'Volume B', note: 'A textbook round brilliant: top colour, near-flawless clarity and an Excellent cut for maximum fire.' },
+  { id: 2, name: 'Lumina Princess', shape: 'Princess', ct: 1.2, mm: '5.62 × 5.58 × 4.05', lw: '1.01', color: 'F', clarity: 'VS1', origin: 'lab', cert: 'IGI', cut: 'Excellent', polish: 'EX', sym: 'VG', fluor: 'None', type: 'Type IIa', table: '68%', depth: '72.4%', girdle: 'Medium', tint: 'white', rt: 'Signature', wt: 'Volume A', note: 'Sharp, modern square brilliant. Protect the four corners with V-prongs when setting.' },
+  { id: 3, name: 'Sunstone Cushion', shape: 'Cushion', ct: 3.01, mm: '8.92 × 8.41 × 5.60', lw: '1.06', color: 'Fancy Intense Yellow', clarity: 'VS1', origin: 'natural', cert: 'GIA', cut: '—', polish: 'VG', sym: 'VG', fluor: 'Faint', type: 'Type Ia', table: '64%', depth: '66.6%', girdle: 'Slightly thick', tint: 'yellow', rt: 'Atelier', wt: 'Project', note: 'A saturated natural yellow in a soft-cornered cushion cut. Colour is graded as Fancy Intense.' },
+  { id: 4, name: 'Celeste Oval', shape: 'Oval', ct: 2.03, mm: '9.38 × 6.52 × 3.97', lw: '1.44', color: 'E', clarity: 'VS1', origin: 'lab', cert: 'IGI', cut: 'Excellent', polish: 'EX', sym: 'EX', fluor: 'None', type: 'Type IIa', table: '59%', depth: '60.9%', girdle: 'Thin to medium', tint: 'white', rt: 'Prestige', wt: 'Volume B', note: 'An elongated brilliant that looks larger than a round of the same weight. No bow-tie shadow.' },
+  { id: 5, name: 'Regent Emerald', shape: 'Emerald', ct: 2.1, mm: '8.41 × 6.12 × 4.10', lw: '1.37', color: 'G', clarity: 'IF', origin: 'natural', cert: 'GIA', cut: '—', polish: 'EX', sym: 'VG', fluor: 'None', type: 'Type IIa', table: '63%', depth: '67.0%', girdle: 'Medium', tint: 'white', rt: 'Prestige', wt: 'Volume B', note: 'Long step-cut facets reward high clarity. Internally Flawless, so the hall-of-mirrors effect is clean.' },
+  { id: 6, name: 'Deco Asscher', shape: 'Asscher', ct: 1.75, mm: '6.82 × 6.78 × 4.52', lw: '1.01', color: 'E', clarity: 'VS2', origin: 'natural', cert: 'GIA', cut: '—', polish: 'EX', sym: 'VG', fluor: 'None', type: 'Type IIa', table: '64%', depth: '66.7%', girdle: 'Medium', tint: 'white', rt: 'Prestige', wt: 'Volume B', note: 'An Art Deco square step cut with cropped corners and a deep, concentric glow.' },
+  { id: 7, name: 'Navette Marquise', shape: 'Marquise', ct: 1.05, mm: '10.62 × 5.41 × 3.38', lw: '1.96', color: 'I', clarity: 'SI1', origin: 'natural', cert: 'IGI', cut: 'Very Good', polish: 'VG', sym: 'VG', fluor: 'None', type: 'Type Ia', table: '59%', depth: '62.5%', girdle: 'Medium', tint: 'warm', rt: 'Signature', wt: 'Volume A', note: 'The longest-looking shape per carat. Excellent value in I colour and SI1 clarity.' },
+  { id: 8, name: 'Dewdrop Pear', shape: 'Pear', ct: 1.3, mm: '8.95 × 5.90 × 3.65', lw: '1.52', color: 'D', clarity: 'VS1', origin: 'lab', cert: 'IGI', cut: 'Excellent', polish: 'EX', sym: 'VG', fluor: 'None', type: 'Type IIa', table: '60%', depth: '61.9%', girdle: 'Medium', tint: 'white', rt: 'Signature', wt: 'Volume A', note: 'A teardrop with a well-centred point and even shoulders. Ideal for pendants and drop earrings.' },
+  { id: 9, name: 'Prism Radiant', shape: 'Radiant', ct: 2.52, mm: '8.62 × 7.02 × 4.88', lw: '1.23', color: 'G', clarity: 'VS2', origin: 'lab', cert: 'IGI', cut: 'Excellent', polish: 'EX', sym: 'EX', fluor: 'None', type: 'Type IIa', table: '67%', depth: '69.5%', girdle: 'Medium', tint: 'white', rt: 'Prestige', wt: 'Volume B', note: 'Rectangular outline with the fire of a brilliant cut. Durable, and hides small inclusions well.' },
+  { id: 10, name: 'Grand Round', shape: 'Round', ct: 4.01, mm: '10.12 × 10.15 × 6.25', lw: '1.00', color: 'G', clarity: 'VVS2', origin: 'lab', cert: 'IGI', cut: 'Excellent', polish: 'EX', sym: 'EX', fluor: 'None', type: 'Type IIa', table: '57%', depth: '61.7%', girdle: 'Medium', tint: 'white', rt: 'Atelier', wt: 'Project', note: 'A statement four-carat round with an Excellent cut, accessible because it is lab-grown.' },
+  { id: 11, name: 'Rosé Oval', shape: 'Oval', ct: 0.8, mm: '6.71 × 5.02 × 3.30', lw: '1.34', color: 'Fancy Vivid Pink', clarity: 'SI1', origin: 'natural', cert: 'GIA', cut: '—', polish: 'VG', sym: 'VG', fluor: 'None', type: 'Type IIa', table: '62%', depth: '65.7%', girdle: 'Medium', tint: 'pink', rt: 'Atelier', wt: 'Project', note: 'A rare natural pink. Colour intensity, not clarity, drives the character of this stone.' },
+  { id: 12, name: 'Bleu Royal Pear', shape: 'Pear', ct: 1.01, mm: '7.78 × 5.18 × 3.22', lw: '1.50', color: 'Fancy Vivid Blue', clarity: 'VS2', origin: 'lab', cert: 'IGI', cut: 'Excellent', polish: 'EX', sym: 'VG', fluor: 'None', type: 'Type IIb', table: '59%', depth: '62.2%', girdle: 'Medium', tint: 'blue', rt: 'Prestige', wt: 'Volume B', note: 'Boron-bearing Type IIb gives blue its colour. Lab-grown makes a vivid blue far more accessible.' }
 ];
 
 const COLOR_TABS = [
@@ -221,6 +215,34 @@ function shapeIcon(name) {
   return `<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="rgba(212,175,55,.12)" stroke="currentColor" stroke-width="3" stroke-linejoin="round">${SHAPES[name].svg}</g></svg>`;
 }
 
+/* ------------------------------ LIBRARY LOADER ------------------------------ */
+// GSAP is loaded from /libs/ first (put gsap.min.js + ScrollTrigger.min.js there for 100% reliability),
+// then from jsDelivr, then cdnjs. The page renders immediately and never waits on a slow CDN.
+function loadScript(src, ms) {
+  return new Promise(resolve => {
+    let done = false;
+    const finish = ok => { if (!done) { done = true; resolve(ok); } };
+    const s = document.createElement('script');
+    s.src = src; s.async = true;
+    s.onload = () => finish(true); s.onerror = () => { s.remove(); finish(false); };
+    setTimeout(() => finish(false), ms);
+    document.head.appendChild(s);
+  });
+}
+async function loadFirst(urls, test) {
+  for (const u of urls) { if (test()) return true; await loadScript(u, 2500); if (test()) return true; }
+  return test();
+}
+async function ensureLibs() {
+  await loadFirst(['libs/gsap.min.js', 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js'], () => typeof window.gsap !== 'undefined');
+  if (typeof window.gsap !== 'undefined') {
+    await loadFirst(['libs/ScrollTrigger.min.js', 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js'], () => typeof window.ScrollTrigger !== 'undefined');
+  }
+  hasGSAP = typeof window.gsap !== 'undefined';
+  return hasGSAP;
+}
+const libsReady = ensureLibs().catch(() => false);
+
 /* ------------------------------ LOADER & INTRO ------------------------------ */
 function initLoader() {
   const loader = $('#loader');
@@ -230,15 +252,16 @@ function initLoader() {
   const finish = () => {
     if (done) return;
     done = true;
-    if (hasGSAP && !reduceMotion) {
+    if (hasGSAP) {
       gsap.to(loader, { opacity: 0, duration: .7, ease: 'power2.inOut', onComplete: () => { loader.style.display = 'none'; heroIntro(); } });
     } else {
       loader.style.display = 'none';
       $$('[data-count]').forEach(el => { el.textContent = (+el.dataset.count).toLocaleString(); });
     }
   };
-  window.addEventListener('load', () => setTimeout(finish, 900));
-  setTimeout(finish, 3200); // safety net
+  const loaded = new Promise(r => { if (document.readyState === 'complete') setTimeout(r, 600); else window.addEventListener('load', () => setTimeout(r, 900)); });
+  Promise.all([loaded, libsReady]).then(finish);
+  setTimeout(finish, 5200); // safety net
 }
 
 function heroIntro() {
@@ -451,6 +474,89 @@ function renderShapes() {
     <div class="mt-6 flex gap-2 flex-wrap"><button class="btn btn-ghost btn-sm" data-filter-shape="${n}">${state.shape ? 'Clear shape filter' : 'View ' + n + ' stones'}</button><button class="btn btn-gold btn-sm" data-enquire="${n} cut loose diamond">Enquire</button></div>`;
 }
 
+const STONE_TINTS = {
+  white: ['#ffffff', '#e4eefa', '#aec6e4'],
+  warm: ['#fffdf0', '#fff0c4', '#dfcb86'],
+  yellow: ['#fff6b0', '#ffd60a', '#b58500'],
+  pink: ['#ffe6f0', '#ff8fb9', '#bb3a72'],
+  blue: ['#e4f3ff', '#4fa3ff', '#1a4cb8']
+};
+
+function stoneOutline(shape) {
+  const C = 100, pts = [];
+  const para = (n, f) => { for (let i = 0; i < n; i++) pts.push(f(i / n * Math.PI * 2)); };
+  const oct = (hw, hh, c) => [[C - hw + c, C - hh], [C + hw - c, C - hh], [C + hw, C - hh + c], [C + hw, C + hh - c], [C + hw - c, C + hh], [C - hw + c, C + hh], [C - hw, C + hh - c], [C - hw, C - hh + c]];
+  switch (shape) {
+    case 'Round': para(32, t => [C + 80 * Math.cos(t), C + 80 * Math.sin(t)]); break;
+    case 'Oval': para(32, t => [C + 58 * Math.cos(t), C + 80 * Math.sin(t)]); break;
+    case 'Cushion': para(32, t => { const c = Math.cos(t), s = Math.sin(t), p = 2 / 3.2; return [C + 76 * Math.sign(c) * Math.pow(Math.abs(c), p), C + 76 * Math.sign(s) * Math.pow(Math.abs(s), p)]; }); break;
+    case 'Princess': return { pts: [[34, 34], [100, 34], [166, 34], [166, 100], [166, 166], [100, 166], [34, 166], [34, 100]], kind: 'brilliant', cy: 100, tf: .6 };
+    case 'Emerald': return { pts: oct(58, 80, 22), kind: 'step', cy: 100, tf: .5 };
+    case 'Asscher': return { pts: oct(72, 72, 24), kind: 'step', cy: 100, tf: .5 };
+    case 'Radiant': return { pts: oct(62, 76, 16), kind: 'brilliant', cy: 100, tf: .58 };
+    case 'Marquise': {
+      const N = 24, w = t => 46 * Math.pow(Math.sin(Math.PI * t), .85);
+      for (let k = 0; k < N; k++) { const t = k / N; pts.push([100 + w(t), 12 + 176 * t]); }
+      for (let k = 0; k < N; k++) { const t = 1 - k / N; pts.push([100 - w(t), 12 + 176 * t]); }
+      return { pts, kind: 'brilliant', cy: 100, tf: .5 };
+    }
+    case 'Pear': {
+      const N = 24, w = s => 56 * Math.pow(Math.sin(Math.PI * Math.pow(s, 1.6)), .8);
+      for (let k = 0; k < N; k++) { const s = k / N; pts.push([100 + w(s), 14 + 172 * s]); }
+      for (let k = 0; k < N; k++) { const s = 1 - k / N; pts.push([100 - w(s), 14 + 172 * s]); }
+      return { pts, kind: 'brilliant', cy: 122, tf: .5 };
+    }
+    default: para(32, t => [C + 80 * Math.cos(t), C + 80 * Math.sin(t)]);
+  }
+  return { pts, kind: 'brilliant', cy: 100, tf: .56 };
+}
+
+// Top-view faceted diamond, drawn per shape and tinted by colour. Illustrative rendering.
+function stoneArt(s) {
+  const o = stoneOutline(s.shape), P = o.pts, cx = 100, cy = o.cy, uid = 'st' + s.id;
+  const [c0, c1, c2] = STONE_TINTS[s.tint] || STONE_TINTS.white;
+  const f = n => n.toFixed(1);
+  const pt = p => f(p[0]) + ',' + f(p[1]);
+  const poly = (arr, attrs) => `<polygon points="${arr.map(pt).join(' ')}" ${attrs}/>`;
+  const scaleP = (p, k) => [cx + k * (p[0] - cx), cy + k * (p[1] - cy)];
+  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  let facets = '';
+
+  if (o.kind === 'step') {
+    const ks = [.84, .68, .52];
+    ks.forEach((k, i) => { facets += poly(P.map(p => scaleP(p, k)), `fill="${i % 2 ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.16)'}" stroke="rgba(255,255,255,.65)" stroke-width="1"`); });
+    P.forEach(p => { facets += `<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(scaleP(p, .52)[0])}" y2="${f(scaleP(p, .52)[1])}" stroke="rgba(255,255,255,.6)" stroke-width="1"/>`; });
+    facets += poly(P.map(p => scaleP(p, .52)), `fill="url(#${uid}t)" stroke="#fff" stroke-width="1.3"`);
+  } else {
+    const m = P.length > 16 ? Math.round(P.length / 16) : 1;
+    const V = P.filter((_, i) => i % m === 0), n = V.length;
+    const T = V.map(p => scaleP(p, o.tf));
+    for (let i = 0; i < n; i++) {
+      const j2 = (i + 1) % n, M = mid(V[i], V[j2]), alt = i % 2;
+      facets += poly([T[i], M, T[j2]], `fill="${alt ? 'rgba(0,0,0,.10)' : 'rgba(255,255,255,.34)'}" stroke="rgba(255,255,255,.6)" stroke-width=".9"`);
+      facets += poly([V[i], M, T[i]], `fill="${alt ? 'rgba(255,255,255,.26)' : 'rgba(0,0,0,.12)'}" stroke="rgba(255,255,255,.55)" stroke-width=".9"`);
+      facets += poly([V[j2], M, T[j2]], `fill="${alt ? 'rgba(0,0,0,.14)' : 'rgba(255,255,255,.22)'}" stroke="rgba(255,255,255,.55)" stroke-width=".9"`);
+    }
+    facets += poly(T, `fill="url(#${uid}t)" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"`);
+    const g = scaleP(V[Math.floor(n * .12)], .4);
+    facets += `<path d="M${f(g[0])} ${f(g[1] - 9)} L${f(g[0] + 2)} ${f(g[1] - 2)} L${f(g[0] + 9)} ${f(g[1])} L${f(g[0] + 2)} ${f(g[1] + 2)} L${f(g[0])} ${f(g[1] + 9)} L${f(g[0] - 2)} ${f(g[1] + 2)} L${f(g[0] - 9)} ${f(g[1])} L${f(g[0] - 2)} ${f(g[1] - 2)}Z" fill="#fff" opacity=".9"/>`;
+  }
+  const k = .72 + .28 * Math.min(1, s.ct / 4);
+  return `<svg class="stone-art-svg" viewBox="0 0 200 200" role="img" aria-label="${s.ct} carat ${s.color} ${s.shape} diamond (illustrative rendering)">
+    <defs>
+      <radialGradient id="${uid}g" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="${c0}"/><stop offset=".55" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></radialGradient>
+      <linearGradient id="${uid}t" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="${c0}" stop-opacity=".85"/></linearGradient>
+      <clipPath id="${uid}c">${poly(P, '')}</clipPath>
+      <linearGradient id="${uid}s" x1="0" y1="0" x2="1" y2="1"><stop offset=".35" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".5"/><stop offset=".65" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    </defs>
+    <g transform="translate(100 100) scale(${f(k)}) translate(-100 -100)">
+      ${poly(P, `fill="url(#${uid}g)" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linejoin="round"`)}
+      ${facets}
+      <g clip-path="url(#${uid}c)"><rect x="0" y="0" width="200" height="200" fill="url(#${uid}s)" class="stone-sheen"/></g>
+    </g>
+  </svg>`;
+}
+
 function renderStoneFilters() {
   $('#color-tabs').innerHTML = COLOR_TABS.map(t => `<button class="chip ${state.colorTab === t.key ? 'active' : ''}" data-color-tab="${t.key}">${t.label}</button>`).join('');
   $('#clarity-tabs').innerHTML = CLARITY_TABS.map(t => `<button class="chip ${state.clarityTab === t.key ? 'active' : ''}" data-clarity-tab="${t.key}">${t.label}</button>`).join('');
@@ -459,19 +565,50 @@ function renderStones() {
   const ct = COLOR_TABS.find(t => t.key === state.colorTab).test;
   const cl = CLARITY_TABS.find(t => t.key === state.clarityTab).test;
   const list = STONES.filter(s => (state.origin === 'all' || s.origin === state.origin) && (!state.shape || s.shape === state.shape) && ct(s.color) && cl(s.clarity));
-  $('#stone-count').textContent = `${list.length} of ${STONES.length} sample stones`;
-  $('#active-shape-note').textContent = state.shape ? `Filtering by shape: ${state.shape} · origin: ${state.origin === 'all' ? 'all' : state.origin === 'lab' ? 'lab-grown' : 'natural'}. Sample inventory shown; live availability is confirmed on enquiry.` : 'Sample inventory shown; live availability is confirmed on enquiry. Select a shape above to narrow further.';
-  $('#stone-grid').innerHTML = list.length ? list.map(s => `
-    <article class="glass stone-card flex items-center gap-5" data-tilt>
-      <div class="tilt-pop-sm shrink-0">${shapeSVG(s.shape, 84)}</div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between gap-2 mb-1"><h4 class="font-display text-2xl">${s.ct.toFixed(2)} ct ${s.shape}</h4></div>
-        <p class="text-xs text-[#a9a18b] mb-1">Colour <strong class="text-[#f5efe0]">${s.color}</strong> · Clarity <strong class="text-[#f5efe0]">${s.clarity}</strong></p>
-        <p class="text-[.62rem] tracking-[.18em] uppercase mb-3"><span class="${s.origin === 'lab' ? 'text-[#7fd3ff]' : 'text-gold'}">${s.origin === 'lab' ? 'Lab-grown' : 'Natural'}</span> <span class="text-[#8f8878]">· ${s.cert} report</span></p>
-        <div class="flex gap-2"><button class="btn btn-ghost btn-sm" style="padding-inline:.9rem" data-enquire="${s.ct.toFixed(2)} ct ${s.shape} ${s.color}/${s.clarity} ${s.origin === 'lab' ? 'lab-grown' : 'natural'} (${s.cert})">Enquire</button></div>
+  $('#stone-count').textContent = `${list.length} of ${STONES.length} featured stones`;
+  $('#active-shape-note').textContent = state.shape ? `Filtering by shape: ${state.shape} · origin: ${state.origin === 'all' ? 'all' : state.origin === 'lab' ? 'lab-grown' : 'natural'}. Live availability is confirmed on enquiry.` : 'Live availability is confirmed on enquiry. Select a shape above to narrow further.';
+  $('#stone-grid').innerHTML = list.length ? list.map(s => {
+    const lab = s.origin === 'lab';
+    const desc = `${s.ct.toFixed(2)} ct ${s.shape} ${s.color}/${s.clarity} ${lab ? 'lab-grown' : 'natural'} (${s.cert}) — ${s.name}`;
+    return `
+    <article class="glass p-4 flex flex-col" data-tilt>
+      <div class="card-img stone-art tilt-pop-sm" style="aspect-ratio:1/1">${stoneArt(s)}<span class="badge">${lab ? 'Lab-grown' : 'Natural'}</span><span class="badge" style="left:auto;right:.8rem">${s.cert}</span></div>
+      <div class="pt-5 px-1 flex-1 flex flex-col">
+        <p class="text-[.6rem] tracking-[.26em] uppercase text-[#8f8878] mb-2">${s.shape} · Ref SS-${String(s.id).padStart(2, '0')}</p>
+        <h4 class="font-display text-2xl leading-tight mb-1">${s.name}</h4>
+        <p class="font-display text-xl gold-text mb-4">${s.ct.toFixed(2)} ct · ${s.color} · ${s.clarity}</p>
+        <dl class="spec-grid mb-4">
+          <div><dt>Size (mm)</dt><dd>${s.mm}</dd></div>
+          <div><dt>Cut</dt><dd>${s.cut}</dd></div>
+          <div><dt>Polish / Sym.</dt><dd>${s.polish} / ${s.sym}</dd></div>
+          <div><dt>Fluorescence</dt><dd>${s.fluor}</dd></div>
+          <div><dt>Type</dt><dd>${s.type}</dd></div>
+          <div><dt>L : W</dt><dd>${s.lw}</dd></div>
+        </dl>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="tier-tag ${state.mode === 'retail' ? 'on' : ''}" data-tier="retail">Retail · ${s.rt}</span>
+          <span class="tier-tag ${state.mode === 'wholesale' ? 'on w' : ''}" data-tier="wholesale">Wholesale · ${s.wt}</span>
+        </div>
+        <div class="acc-panel" id="sd-${s.id}"><div style="padding:0 0 1rem;max-width:none">
+          <p class="text-xs text-[#b9b19b] leading-relaxed border-t border-white/10 pt-3 mb-3">${s.note}</p>
+          <ul class="text-xs text-[#a9a18b] space-y-1.5"><li>&#9670; Table ${s.table} · Depth ${s.depth} · Girdle ${s.girdle}</li><li>&#9670; Culet: none · Report: ${s.cert} grading report supplied</li><li>&#9670; ${lab ? 'Lab-grown: laser-inscribed and always disclosed on the invoice' : 'Natural: provenance documentation available on request'}</li></ul>
+          <p class="text-[.7rem] text-[#6f6757] mt-3">Price on request — quoted in your currency.</p></div></div>
+        <div class="flex gap-2 mt-auto">
+          <button class="btn btn-ghost btn-sm flex-1" data-explore-stone="${s.id}" aria-expanded="false" aria-controls="sd-${s.id}">Explore</button>
+          <button class="btn btn-gold btn-sm flex-1" data-enquire="${desc}">Enquire Now</button>
+        </div>
       </div>
-    </article>`).join('') : '<p class="empty-state">No sample stones match these filters. Enquire — we source to specification.</p>';
+    </article>`;
+  }).join('') : '<p class="empty-state">No featured stones match these filters. Enquire — we source to specification.</p>';
   animateIn($$('#stone-grid > article'), { stagger: .04 });
+}
+
+function toggleStone(id, btn) {
+  const panel = $('#sd-' + id);
+  const open = panel.style.maxHeight && panel.style.maxHeight !== '0px';
+  panel.style.maxHeight = open ? '0px' : panel.scrollHeight + 'px';
+  btn.textContent = open ? 'Explore' : 'Close';
+  btn.setAttribute('aria-expanded', String(!open));
 }
 
 /* ------------------------------ ANATOMY ------------------------------ */
@@ -554,7 +691,7 @@ function renderC(which) {
           <div class="flex flex-wrap gap-2" id="color-btns">${COLOR_GRADES.map((g, i) => `<button class="grade-btn ${i === 0 ? 'active' : ''}" data-color="${i}">${g}</button>`).join('')}</div>
         </div>
         <div class="glass p-8 text-center">
-          <svg id="color-gem" viewBox="0 0 100 100" class="w-40 h-40 mx-auto mb-4"><polygon points="28,14 72,14 94,40 50,92 6,40" fill="#fff" stroke="#fff" stroke-opacity=".8" stroke-width="2" stroke-linejoin="round"/><polyline points="6,40 94,40 M28,14 40,40 50,92 60,40 72,14" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/></svg>
+          <svg id="color-gem" viewBox="0 0 100 100" class="w-40 h-40 mx-auto mb-4"><polygon points="28,14 72,14 94,40 50,92 6,40" fill="#fff" stroke="#fff" stroke-opacity=".8" stroke-width="2" stroke-linejoin="round"/><path d="M6,40 L94,40 M28,14 L40,40 L50,92 L60,40 L72,14" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/></svg>
           <p class="text-[.62rem] tracking-[.28em] uppercase text-gold mb-1" id="color-group"></p>
           <h5 class="font-display text-5xl gold-text mb-2" id="color-letter">D</h5>
           <p class="text-sm text-[#b9b19b] leading-relaxed" id="color-desc"></p>
@@ -795,6 +932,7 @@ function initClicks() {
     const t = e.target;
     const enq = t.closest('[data-enquire]'); if (enq) { window.openEnquiry(enq.getAttribute('data-enquire')); return; }
     const ex = t.closest('[data-explore]'); if (ex) { toggleSpecs(ex.dataset.explore, ex); return; }
+    const exs = t.closest('[data-explore-stone]'); if (exs) { toggleStone(exs.dataset.exploreStone, exs); return; }
     const ec = t.closest('[data-explore-cat]'); if (ec) { state.cat = ec.dataset.exploreCat; renderProducts(); scrollToId('products'); return; }
     const em = t.closest('[data-explore-mat]'); if (em) { state.mat = em.dataset.exploreMat; renderProducts(); scrollToId('products'); return; }
     if (t.closest('#filter-clear')) { state.cat = null; state.mat = null; renderProducts(); return; }
@@ -880,7 +1018,7 @@ const INVEST_TIERS = [
   { name: 'Principal', lakh: 500, blurb: 'Co-investment in selected inventory lots, with direct access to leadership (₹5 crore).' },
   { name: 'Anchor', lakh: 1000, blurb: 'Strategic participation discussions for qualified investors (₹10 crore).' }
 ];
-//*Invest Calculator Function ---
+
 function initInvest() {
   const sel = $('#inv-country'); if (!sel) return;
   const fmtInr = lakh => lakh >= 100 ? `₹${+(lakh / 100).toFixed(2)} crore` : `₹${lakh} lakh`;
@@ -894,7 +1032,7 @@ function initInvest() {
   } catch (e) { sel.value = '0'; }
 
   // Currency conversion fix: Dividing INR by currency rate properly
-   const money = (inr, compact) => {
+    const money = (inr, compact) => {
     const v = inr / cur.rate;
     try { 
       return new Intl.NumberFormat('en-US', { // 'de-DE' ki jagah 'en-US' kar diya taaki dot ki jagah comma aaye
@@ -996,6 +1134,7 @@ function initInvest() {
   apply();
 }
 
+
 /* ------------------------------ INIT ------------------------------ */
 function init() {
   const safe = fn => { try { fn(); } catch (e) { console.error('[init]', e); } };
@@ -1018,13 +1157,9 @@ function init() {
   safe(() => initInvest());
   safe(() => initTilt());
   safe(() => initSparkles());
-  safe(() => initReveals());
   safe(() => syncOrigin());
-  safe(() => ScrollTriggerRefresh());
-  if (!hasGSAP) { const l = $('#loader'); if (l) l.style.display = 'none'; }
-}
-function ScrollTriggerRefresh() {
-  if (typeof ScrollTrigger !== 'undefined') window.addEventListener('load', () => setTimeout(() => ScrollTrigger.refresh(), 600));
+  // scroll animations start once GSAP is available (page is already fully usable without it)
+  libsReady.then(ok => { if (ok) { safe(() => initReveals()); window.addEventListener('load', () => setTimeout(() => { if (window.ScrollTrigger) ScrollTrigger.refresh(); }, 600)); } });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
