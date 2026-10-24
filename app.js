@@ -11,7 +11,7 @@
 // instead (Formspree, Web3Forms, etc.), swap submitEnquiry() below.
 const CONFIG = {
   brand: 'Surani & Sons',
-  email: 'enquiries@suranisons.example'
+  email: 'sales@suranijwelsanddiamonds.online'
 };
 
 /* ------------------------------ HELPERS ------------------------------ */
