@@ -242,3 +242,14 @@ select.field option { background: #111114; color: var(--ivory); }
 .no-js [data-reveal] { opacity: 1 !important; transform: none !important; }
 .empty-state { grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: #8d8672; }
 
+
+/* ---------- Featured loose stones ---------- */
+.stone-art { background: radial-gradient(circle at 50% 42%, rgba(212,175,55,.20), transparent 62%), linear-gradient(145deg, #17120e, #2a0f10); display: flex; align-items: center; justify-content: center; }
+.stone-art::after { display: none; }
+.stone-art-svg { width: 88%; height: 88%; filter: drop-shadow(0 0 22px rgba(255,255,255,.28)); transition: transform 1s cubic-bezier(.2,.8,.2,1); position: relative; z-index: 1; }
+.glass:hover .stone-art-svg { transform: scale(1.07) rotate(2deg); }
+.stone-sheen { animation: sheen 5s ease-in-out infinite; }
+@keyframes sheen { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem 1rem; border-top: 1px solid rgba(255,255,255,.08); padding-top: .9rem; }
+.spec-grid dt { font-size: .56rem; letter-spacing: .2em; text-transform: uppercase; color: #8f8878; }
+.spec-grid dd { font-size: .8rem; color: #f5efe0; margin-top: 1px; }
