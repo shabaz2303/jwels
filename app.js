@@ -910,8 +910,7 @@ function initInvest() {
         <button class="btn btn-ghost btn-sm self-start inv-enq" data-enquire="Investor enquiry — ${t.name} tier (${fmtInr(t.lakh)} / ${money(t.lakh * 1e5)}) · ${cur.c}">Enquire</button>
       </article>`).join('');
   };
-
-  const calc = () => {
+   
 const calc = () => {
     // Input values lena
     let lakh = +$('#calc-amt').value;
