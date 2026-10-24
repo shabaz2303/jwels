@@ -11,14 +11,14 @@
 // instead (Formspree, Web3Forms, etc.), swap submitEnquiry() below.
 const CONFIG = {
   brand: 'Surani & Sons',
-  email: 'sales@suranijwelsanddiamonds.online'
+  email: 'enquiries@suranisons.example'
 };
 
 /* ------------------------------ HELPERS ------------------------------ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const hasGSAP = typeof window.gsap !== 'undefined';
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduceMotion = false; // animations always on (OS 'reduce motion' setting is ignored on purpose)
 const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const state = { mode: 'retail', cat: null, mat: null, origin: 'all', shape: null, colorTab: 'all', clarityTab: 'all' };
 
