@@ -920,20 +920,24 @@ function initInvest() {
         if ($('#calc-amt')) $('#calc-amt').value = 10; 
     }
 
-    const r = +$('#calc-ret').value, y = +$('#calc-years').value;
+    const y = +$('#calc-years').value;
     const inr = lakh * 1e5;
     
-    // Standard compound growth calculation
-    const end = inr * Math.pow(1 + r / 100, y);
-    const gain = end - inr;
-
-    // Monthly Payout / Return calculation (Total gain ka monthly average)
+    // Aapka logic: Har 10 lakh par 8 lakh monthly profit/payout
+    // Matlab 1 lakh par 0.8 lakh (80,000) monthly payout
+    const monthlyPayoutPerLakh = 80000; 
+    const monthlyPayout = lakh * monthlyPayoutPerLakh;
+    
     const totalMonths = y * 12;
-    const monthlyPayout = totalMonths > 0 ? gain / totalMonths : 0;
+    const totalGain = monthlyPayout * totalMonths;
+    const end = inr + totalGain;
 
     // UI Updates
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
-    $('#calc-ret-out').textContent = (r > 0 ? '+' : '') + r + '% / year';
+    
+    // Return rate ki jagah ab monthly payout show karega
+    $('#calc-ret-out').textContent = `Fixed Scaling Payout`;
+    
     $('#res-in').textContent = money(inr, true);
     $('#res-out').textContent = money(end, true);
     
@@ -942,13 +946,13 @@ function initInvest() {
     }
 
     const g = $('#res-gain'); 
-    g.textContent = (gain < 0 ? '(' + money(-gain, true) + ')' : money(gain, true));
-    g.style.color = gain < 0 ? '#ff8a8a' : gain > 0 ? '#6ee7a8' : '#f5efe0';
+    g.textContent = money(totalGain, true);
+    g.style.color = '#6ee7a8'; // Hamesha green profit dikhega
     
-    $('#res-note').textContent = `Hypothetical: ${r}% p.a. over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
+    $('#res-note').textContent = `Fixed Payout Model: ₹8 lakh/month per ₹10 lakh invested over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
     $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
-    $$('#calc-presets .chip').forEach(c => c.classList.toggle('active', +c.dataset.ret === r));
   };
+
 
   const apply = () => {
     cur = INVEST_COUNTRIES[+sel.value];
