@@ -837,6 +837,146 @@ function initReveals() {
   }
 }
 
+/* ------------------------------ INVEST: TIERS + CALCULATOR ------------------------------ */
+// Indicative rates only (INR per 1 unit of currency). Update as needed; real quotations confirm final amounts.
+// Countries with `blocked: true` cannot view the programme (compliance policy). Edit freely.
+const INVEST_COUNTRIES = [
+  { c: 'India', cur: 'INR', rate: 1, loc: 'en-IN' },
+  { c: 'United States', cur: 'USD', rate: 88, loc: 'en-US' },
+  { c: 'United Kingdom', cur: 'GBP', rate: 118, loc: 'en-GB' },
+  { c: 'United Arab Emirates', cur: 'AED', rate: 24, loc: 'en-AE' },
+  { c: 'Saudi Arabia', cur: 'SAR', rate: 23.5, loc: 'en-SA' },
+  { c: 'Qatar', cur: 'QAR', rate: 24.2, loc: 'en-QA' },
+  { c: 'Singapore', cur: 'SGD', rate: 68, loc: 'en-SG' },
+  { c: 'Hong Kong', cur: 'HKD', rate: 11.3, loc: 'en-HK' },
+  { c: 'Australia', cur: 'AUD', rate: 58, loc: 'en-AU' },
+  { c: 'Canada', cur: 'CAD', rate: 64, loc: 'en-CA' },
+  { c: 'Switzerland', cur: 'CHF', rate: 110, loc: 'de-CH' },
+  { c: 'Japan', cur: 'JPY', rate: .59, loc: 'ja-JP' },
+  { c: 'China', cur: 'CNY', rate: 12.4, loc: 'zh-CN' },
+  { c: 'Türkiye', cur: 'TRY', rate: 2.1, loc: 'tr-TR' },
+  { c: 'South Africa', cur: 'ZAR', rate: 4.9, loc: 'en-ZA' },
+  { c: 'Malaysia', cur: 'MYR', rate: 20.5, loc: 'ms-MY' },
+  { c: 'Thailand', cur: 'THB', rate: 2.7, loc: 'th-TH' },
+  { c: 'Sri Lanka', cur: 'LKR', rate: .29, loc: 'en-LK' },
+  { c: 'Nepal', cur: 'NPR', rate: .625, loc: 'en-NP' },
+  { c: 'Bangladesh', cur: 'BDT', rate: .72, loc: 'bn-BD' },
+  { c: 'Germany', cur: 'EUR', rate: 102, loc: 'de-DE' },
+  { c: 'France', cur: 'EUR', rate: 102, loc: 'fr-FR' },
+  { c: 'Italy', cur: 'EUR', rate: 102, loc: 'it-IT' },
+  { c: 'Spain', cur: 'EUR', rate: 102, loc: 'es-ES' },
+  { c: 'Netherlands', cur: 'EUR', rate: 102, loc: 'nl-NL' },
+  { c: 'Belgium', cur: 'EUR', rate: 102, loc: 'nl-BE' },
+  { c: 'Ireland', cur: 'EUR', rate: 102, loc: 'en-IE' },
+  { c: 'Other Eurozone country', cur: 'EUR', rate: 102, loc: 'de-DE' },
+  { c: 'Rest of world (USD)', cur: 'USD', rate: 88, loc: 'en-US' },
+  { c: 'Pakistan', cur: 'PKR', rate: .31, loc: 'en-PK', blocked: true }
+];
+const INVEST_TIERS = [
+  { name: 'Entry Partner', lakh: 10, blurb: 'Your first step into inventory partnership, with documented stock reporting.' },
+  { name: 'Associate', lakh: 25, blurb: 'A larger share of a graded stone parcel, with quarterly review calls.' },
+  { name: 'Select', lakh: 50, blurb: 'Priority allocation in vault-backed programmes, with third-party verification.' },
+  { name: 'Strategic', lakh: 100, blurb: 'Dedicated relationship manager and bespoke structuring (₹1 crore).' },
+  { name: 'Principal', lakh: 500, blurb: 'Co-investment in selected inventory lots, with direct access to leadership (₹5 crore).' },
+  { name: 'Anchor', lakh: 1000, blurb: 'Strategic participation discussions for qualified investors (₹10 crore).' }
+];
+
+function initInvest() {
+  const sel = $('#inv-country'); if (!sel) return;
+  const fmtInr = lakh => lakh >= 100 ? `₹${+(lakh / 100).toFixed(2)} crore` : `₹${lakh} lakh`;
+  let cur = INVEST_COUNTRIES[0];
+
+  sel.innerHTML = INVEST_COUNTRIES.map((k, i) => `<option value="${i}">${k.c} · ${k.cur}${k.blocked ? ' — not available' : ''}</option>`).join('');
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const guess = tz.startsWith('Asia/Kolkata') || tz.startsWith('Asia/Calcutta') ? 'India' : tz.startsWith('Asia/Dubai') ? 'United Arab Emirates' : tz.startsWith('Europe/London') ? 'United Kingdom' : tz.startsWith('Europe/Istanbul') ? 'Türkiye' : tz.startsWith('America/') ? 'United States' : 'India';
+    sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
+  } catch (e) { sel.value = '0'; }
+
+  const money = (inr, compact) => {
+    const v = inr / cur.rate;
+    try { return new Intl.NumberFormat(cur.loc, { style: 'currency', currency: cur.cur, maximumFractionDigits: 0, ...(compact && v >= 1e6 ? { notation: 'compact', maximumFractionDigits: 2 } : {}) }).format(v); }
+    catch (e) { return cur.cur + ' ' + Math.round(v).toLocaleString(); }
+  };
+
+  const renderTiers = () => {
+    $('#tier-grid').innerHTML = INVEST_TIERS.map((t, i) => `
+      <article class="glass p-7 flex flex-col" data-tilt>
+        <div class="flex items-start justify-between mb-4"><span class="font-display text-5xl text-gold/30">0${i + 1}</span><span class="text-[.6rem] tracking-[.2em] uppercase text-[#8f8878]">${fmtInr(t.lakh)}</span></div>
+        <h4 class="font-display text-3xl mb-1 tilt-pop-sm">${t.name}</h4>
+        <p class="font-display text-4xl gold-text mb-3">${money(t.lakh * 1e5)}</p>
+        ${cur.cur !== 'INR' ? `<p class="text-[.68rem] text-[#6f6757] -mt-2 mb-3">&asymp; ₹${(t.lakh * 1e5).toLocaleString('en-IN')}</p>` : ''}
+        <p class="text-sm text-[#a9a18b] leading-relaxed mb-6 flex-1">${t.blurb}</p>
+        <button class="btn btn-ghost btn-sm self-start inv-enq" data-enquire="Investor enquiry — ${t.name} tier (${fmtInr(t.lakh)} / ${money(t.lakh * 1e5)}) · ${cur.c}">Enquire</button>
+      </article>`).join('');
+  };
+
+  const calc = () => {
+const calc = () => {
+    // Input values lena
+    let lakh = +$('#calc-amt').value;
+    
+    // --- RULE: Minimum 10 Lakhs restriction ---
+    if (lakh < 10) {
+        lakh = 10; // Minimum limit 10 lakh set kar diya
+        if ($('#calc-amt')) $('#calc-amt').value = 10; // Input field ko bhi 10 kar dega
+    }
+
+    const r = +$('#calc-ret').value, y = +$('#calc-years').value;
+    const inr = lakh * 1e5;
+    
+    // Standard compound growth calculation
+    const end = inr * Math.pow(1 + r / 100, y);
+    const gain = end - inr;
+
+    // Monthly Payout / Return calculation (Total gain ka monthly average)
+    const totalMonths = y * 12;
+    const monthlyPayout = totalMonths > 0 ? gain / totalMonths : 0;
+
+    // UI Updates
+    $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
+    $('#calc-ret-out').textContent = (r > 0 ? '+' : '') + r + '% / year';
+    $('#res-in').textContent = money(inr, true);
+    $('#res-out').textContent = money(end, true);
+    
+    // Agar aapke HTML me monthly payout dikhane ke liye koi alag element hai (jaise #res-monthly):
+    if ($('#res-monthly')) {
+        $('#res-monthly').textContent = money(monthlyPayout, true);
+    }
+
+    const g = $('#res-gain'); 
+    g.textContent = (gain < 0 ? '(' + money(-gain, true) + ')' : money(gain, true));
+    g.style.color = gain < 0 ? '#ff8a8a' : gain > 0 ? '#6ee7a8' : '#f5efe0';
+    
+    // Note me monthly payout clearly dikhega
+    $('#res-note').textContent = `Hypothetical: ${r}% p.a. over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
+    $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
+    $$('#calc-presets .chip').forEach(c => c.classList.toggle('active', +c.dataset.ret === r));
+};
+
+
+  const apply = () => {
+    cur = INVEST_COUNTRIES[+sel.value];
+    $('#inv-blocked').classList.toggle('hidden', !cur.blocked);
+    $('#inv-live').classList.toggle('hidden', !!cur.blocked);
+    $('#inv-blocked-country').textContent = cur.c;
+    $('#inv-rate-note').textContent = cur.blocked ? '' : cur.cur === 'INR' ? 'Amounts shown in Indian rupees.' : `Shown in ${cur.cur} at an indicative rate of 1 ${cur.cur} ≈ ₹${cur.rate}. Final amounts are confirmed in your written quotation.`;
+    if (cur.blocked) return;
+    $('#calc-min').textContent = money(1e6); $('#calc-max').textContent = money(1e8, true);
+    renderTiers(); calc();
+    animateIn($$('#tier-grid > article'), { stagger: .06 });
+  };
+
+  sel.addEventListener('change', apply);
+  ['#calc-amt', '#calc-ret', '#calc-years'].forEach(s => $(s).addEventListener('input', calc));
+  $('#calc-presets').addEventListener('click', e => { const b = e.target.closest('[data-ret]'); if (b) { $('#calc-ret').value = b.dataset.ret; calc(); } });
+  // prefill country in enquiry modal after it opens
+  document.addEventListener('click', e => {
+    if (e.target.closest('.inv-enq, #calc-enq')) setTimeout(() => { const f = $('#e-country'); if (f && !f.value) f.value = cur.c.replace('Rest of world (USD)', '').replace('Other Eurozone country', ''); }, 0);
+  });
+  apply();
+}
+
 /* ------------------------------ INIT ------------------------------ */
 function init() {
   initLoader();
@@ -855,6 +995,7 @@ function init() {
   renderOfficesTerms();
   initModal();
   initClicks();
+  initInvest();
   initTilt();
   initSparkles();
   initReveals();
