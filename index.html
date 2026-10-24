@@ -395,7 +395,70 @@
           <article class="glass p-8" data-tilt data-reveal><span class="font-display text-5xl text-gold/30">02</span><h3 class="font-display text-3xl mt-3 mb-3 tilt-pop-sm">Vault-Backed Programmes</h3><p class="text-sm text-[#a9a18b] leading-relaxed mb-6">Structures in which graded stones are held in insured, segregated vault storage as collateral for trade finance, with third-party verification.</p><button class="btn btn-ghost btn-sm" data-enquire="Investor enquiry — Vault-Backed Programmes">Request deck</button></article>
           <article class="glass p-8" data-tilt data-reveal><span class="font-display text-5xl text-gold/30">03</span><h3 class="font-display text-3xl mt-3 mb-3 tilt-pop-sm">Strategic Equity</h3><p class="text-sm text-[#a9a18b] leading-relaxed mb-6">Minority strategic participation for qualified investors aligned with our expansion into new retail and distribution markets.</p><button class="btn btn-ghost btn-sm" data-enquire="Investor enquiry — Strategic Equity">Request deck</button></article>
         </div>
-        <p class="mt-8 text-xs text-[#6f6757] max-w-3xl leading-relaxed">This section is informational and is an offer or solicitation to buy securities or an investment recommendation. Diamond values can rise or fall and resale prices differ from retail prices. But returns are guaranteed. Participation is limited to qualified investors (worldwide), subject to due diligence and applicable International law.</p>
+        <!-- Partnership tiers + illustrative calculator -->
+        <div class="mt-20" id="invest-tools">
+          <div class="flex flex-wrap items-end justify-between gap-6 mb-8" data-reveal>
+            <div class="max-w-xl">
+              <p class="eyebrow mb-4">Partnership Tiers</p>
+              <h3 class="font-display text-4xl">From <span class="italic gold-text">&#8377;10 lakh</span> to <span class="italic gold-text">&#8377;10 crore</span></h3>
+            </div>
+            <div class="w-full sm:w-80">
+              <label class="field-label" for="inv-country">Your country</label>
+              <select id="inv-country" class="field"></select>
+              <p class="text-[.68rem] text-[#6f6757] mt-2" id="inv-rate-note"></p>
+            </div>
+          </div>
+
+          <div id="inv-blocked" class="hidden glass p-8 md:p-10 text-center" style="border-color:rgba(239,68,68,.55)" role="alert">
+            <p class="text-[.65rem] tracking-[.3em] uppercase mb-3" style="color:#ff8a8a">Restricted jurisdiction</p>
+            <h4 class="font-display text-3xl md:text-4xl mb-3">Not available in <span id="inv-blocked-country">your country</span></h4>
+            <p class="text-sm text-[#b9b19b] max-w-xl mx-auto leading-relaxed">Under our compliance policy, this investment programme is not offered to residents of this country. Partnership tiers and the calculator are therefore unavailable. For other enquiries, please use the Contact section.</p>
+          </div>
+
+          <div id="inv-live">
+            <div id="tier-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12" style="perspective:1400px"></div>
+
+            <div class="glass p-6 md:p-10" data-reveal>
+              <div class="grid lg:grid-cols-2 gap-10">
+                <div>
+                  <p class="eyebrow mb-4">Illustrative Calculator</p>
+                  <h4 class="font-display text-3xl mb-2">Model your own <span class="italic gold-text">scenario</span></h4>
+                  <p class="text-sm text-[#a9a18b] leading-relaxed mb-7">Enter an amount and the annual return <em>you</em> assume. We do not promise or forecast any return. Results can be lower than the amount invested.</p>
+
+                  <label class="field-label" for="calc-amt">Amount <strong id="calc-amt-out" class="text-gold ml-2 text-base font-display"></strong></label>
+                  <input id="calc-amt" type="range" min="10" max="1000" step="5" value="10" />
+                  <div class="flex justify-between text-[.62rem] text-[#8f8878] mt-2 mb-7"><span id="calc-min"></span><span id="calc-max"></span></div>
+
+                  <label class="field-label" for="calc-ret">Assumed annual return <strong id="calc-ret-out" class="text-gold ml-2 text-base font-display"></strong></label>
+                  <input id="calc-ret" type="range" min="-30" max="30" step="1" value="10" />
+                  <div class="flex flex-wrap gap-2 mt-4 mb-7" id="calc-presets">
+                    <button type="button" class="chip" data-ret="-10">-10%</button>
+                    <button type="button" class="chip" data-ret="0">0%</button>
+                    <button type="button" class="chip active" data-ret="10">10%</button>
+                    <button type="button" class="chip" data-ret="20">20%</button>
+                  </div>
+
+                  <label class="field-label" for="calc-years">Duration</label>
+                  <select id="calc-years" class="field"><option value="1">1 year</option><option value="2">2 years</option><option value="3" selected>3 years</option><option value="5">5 years</option><option value="7">7 years</option><option value="10">10 years</option></select>
+                </div>
+
+                <div class="flex flex-col">
+                  <div class="grid grid-cols-2 gap-4 mb-5">
+                    <div class="glass p-5"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">Amount invested</p><p class="font-display text-2xl" id="res-in">-</p></div>
+                    <div class="glass p-5"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">Illustrative value</p><p class="font-display text-2xl gold-text" id="res-out">-</p></div>
+                    <div class="glass p-5 col-span-2"><p class="text-[.58rem] tracking-[.2em] uppercase text-[#8f8878] mb-1">Illustrative gain / (loss)</p><p class="font-display text-3xl" id="res-gain">-</p><p class="text-xs text-[#8f8878] mt-1" id="res-note"></p></div>
+                  </div>
+                  <div class="border-l-2 border-crimson pl-4 mb-6">
+                    <p class="text-[.62rem] tracking-[.24em] uppercase text-[#8f8878] mb-1">Important</p>
+                
+                  <button class="btn btn-gold mt-auto self-start" id="calc-enq" data-enquire="Investor enquiry">Discuss this tier</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="mt-8 text-xs text-[#6f6757] max-w-3xl leading-relaxed">>This section is informational and is an offer or solicitation to buy securities or an investment recommendation. Diamond values can rise or fall and resale prices differ from retail prices. But returns are guaranteed. Participation is limited to qualified investors (worldwide), subject to due diligence and applicable International law.</p>
       </div>
     </section>
 
@@ -453,7 +516,7 @@
       <div><p class="field-label">Company</p><ul class="space-y-2 text-sm text-[#a9a18b]"><li><a class="hover:text-gold" href="#about">About Us</a></li><li><a class="hover:text-gold" href="#invest">Invest in Us</a></li><li><a class="hover:text-gold" href="#contact">Contact</a></li><li><a class="hover:text-gold" href="#terms">Terms &amp; Conditions</a></li></ul></div>
     </div>
     <div class="max-w-7xl mx-auto px-5 flex flex-wrap items-center justify-between gap-4 text-xs text-[#6f6757] border-t border-white/5 pt-6">
-      <p>&copy; <span id="2001"></span> Surani &amp; Sons. All rights reserved.</p>
+      <p>&copy; <span id="year"></span> Surani &amp; Sons. All rights reserved.</p>
       <p>Imagery illustrative. Diamond grading by independent laboratories.</p>
     </div>
   </footer>
