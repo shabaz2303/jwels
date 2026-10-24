@@ -880,7 +880,7 @@ const INVEST_TIERS = [
   { name: 'Principal', lakh: 500, blurb: 'Co-investment in selected inventory lots, with direct access to leadership (₹5 crore).' },
   { name: 'Anchor', lakh: 1000, blurb: 'Strategic participation discussions for qualified investors (₹10 crore).' }
 ];
-
+//*Invest Calculator Function ---
 function initInvest() {
   const sel = $('#inv-country'); if (!sel) return;
   const fmtInr = lakh => lakh >= 100 ? `₹${+(lakh / 100).toFixed(2)} crore` : `₹${lakh} lakh`;
@@ -893,10 +893,19 @@ function initInvest() {
     sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
   } catch (e) { sel.value = '0'; }
 
+  // Currency conversion fix: Dividing INR by currency rate properly
   const money = (inr, compact) => {
     const v = inr / cur.rate;
-    try { return new Intl.NumberFormat(cur.loc, { style: 'currency', currency: cur.cur, maximumFractionDigits: 0, ...(compact && v >= 1e6 ? { notation: 'compact', maximumFractionDigits: 2 } : {}) }).format(v); }
-    catch (e) { return cur.cur + ' ' + Math.round(v).toLocaleString(); }
+    try { 
+      return new Intl.NumberFormat(cur.loc, { 
+        style: 'currency', 
+        currency: cur.cur, 
+        maximumFractionDigits: 0, 
+        ...(compact && v >= 1e6 ? { notation: 'compact', maximumFractionDigits: 2 } : {}) 
+      }).format(v); 
+    } catch (e) { 
+      return cur.cur + ' ' + Math.round(v).toLocaleString(); 
+    }
   };
 
   const renderTiers = () => {
@@ -923,8 +932,7 @@ function initInvest() {
     const y = +$('#calc-years').value;
     const inr = lakh * 1e5;
     
-    // Aapka logic: Har 10 lakh par 8 lakh monthly profit/payout
-    // Matlab 1 lakh par 0.8 lakh (80,000) monthly payout
+    // Fixed Scaling Payout Model: ₹8 lakh/month per ₹10 lakh invested
     const monthlyPayoutPerLakh = 80000; 
     const monthlyPayout = lakh * monthlyPayoutPerLakh;
     
@@ -935,8 +943,10 @@ function initInvest() {
     // UI Updates
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
     
-    // Return rate ki jagah ab monthly payout show karega
-    $('#calc-ret-out').textContent = `Fixed Scaling Payout`;
+    // Return rate section hidden or showing fixed payout label
+    if ($('#calc-ret-out')) {
+        $('#calc-ret-out').textContent = `Fixed Scaling Payout Model`;
+    }
     
     $('#res-in').textContent = money(inr, true);
     $('#res-out').textContent = money(end, true);
@@ -946,13 +956,19 @@ function initInvest() {
     }
 
     const g = $('#res-gain'); 
-    g.textContent = money(totalGain, true);
-    g.style.color = '#6ee7a8'; // Hamesha green profit dikhega
+    if (g) {
+        g.textContent = money(totalGain, true);
+        g.style.color = '#6ee7a8';
+    }
     
-    $('#res-note').textContent = `Fixed Payout Model: ₹8 lakh/month per ₹10 lakh invested over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
-    $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
+    if ($('#res-note')) {
+        $('#res-note').textContent = `Fixed Payout: ₹8 lakh/month per ₹10 lakh invested over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
+    }
+    
+    if ($('#calc-enq')) {
+        $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
+    }
   };
-
 
   const apply = () => {
     cur = INVEST_COUNTRIES[+sel.value];
@@ -961,20 +977,25 @@ function initInvest() {
     $('#inv-blocked-country').textContent = cur.c;
     $('#inv-rate-note').textContent = cur.blocked ? '' : cur.cur === 'INR' ? 'Amounts shown in Indian rupees.' : `Shown in ${cur.cur} at an indicative rate of 1 ${cur.cur} ≈ ₹${cur.rate}. Final amounts are confirmed in your written quotation.`;
     if (cur.blocked) return;
-    $('#calc-min').textContent = money(1e6); $('#calc-max').textContent = money(1e8, true);
-    renderTiers(); calc();
+    $('#calc-min').textContent = money(1e6); 
+    $('#calc-max').textContent = money(1e8, true);
+    renderTiers(); 
+    calc();
     animateIn($$('#tier-grid > article'), { stagger: .06 });
   };
 
   sel.addEventListener('change', apply);
-  ['#calc-amt', '#calc-ret', '#calc-years'].forEach(s => $(s).addEventListener('input', calc));
-  $('#calc-presets').addEventListener('click', e => { const b = e.target.closest('[data-ret]'); if (b) { $('#calc-ret').value = b.dataset.ret; calc(); } });
+  
+  // Return slider listener hata diya hai kyunki slider hi remove karna hai
+  $('#calc-amt').addEventListener('input', calc);
+  $('#calc-years').addEventListener('change', calc);
   
   document.addEventListener('click', e => {
     if (e.target.closest('.inv-enq, #calc-enq')) setTimeout(() => { const f = $('#e-country'); if (f && !f.value) f.value = cur.c.replace('Rest of world (USD)', '').replace('Other Eurozone country', ''); }, 0);
   });
   apply();
 }
+
 /* ------------------------------ INIT ------------------------------ */
 function init() {
   const safe = fn => { try { fn(); } catch (e) { console.error('[init]', e); } };
