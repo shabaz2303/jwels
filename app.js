@@ -912,15 +912,40 @@ function initInvest() {
   };
 
   const calc = () => {
-    const lakh = +$('#calc-amt').value, r = +$('#calc-ret').value, y = +$('#calc-years').value;
-    const inr = lakh * 1e5, end = inr * Math.pow(1 + r / 100, y), gain = end - inr;
+    let lakh = +$('#calc-amt').value;
+    
+    // --- Rule: Minimum 10 Lakhs restriction ---
+    if (lakh < 10) {
+        lakh = 10; 
+        if ($('#calc-amt')) $('#calc-amt').value = 10; 
+    }
+
+    const r = +$('#calc-ret').value, y = +$('#calc-years').value;
+    const inr = lakh * 1e5;
+    
+    // Standard compound growth calculation
+    const end = inr * Math.pow(1 + r / 100, y);
+    const gain = end - inr;
+
+    // Monthly Payout / Return calculation (Total gain ka monthly average)
+    const totalMonths = y * 12;
+    const monthlyPayout = totalMonths > 0 ? gain / totalMonths : 0;
+
+    // UI Updates
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
     $('#calc-ret-out').textContent = (r > 0 ? '+' : '') + r + '% / year';
     $('#res-in').textContent = money(inr, true);
     $('#res-out').textContent = money(end, true);
-    const g = $('#res-gain'); g.textContent = (gain < 0 ? '(' + money(-gain, true) + ')' : money(gain, true));
+    
+    if ($('#res-monthly')) {
+        $('#res-monthly').textContent = money(monthlyPayout, true);
+    }
+
+    const g = $('#res-gain'); 
+    g.textContent = (gain < 0 ? '(' + money(-gain, true) + ')' : money(gain, true));
     g.style.color = gain < 0 ? '#ff8a8a' : gain > 0 ? '#6ee7a8' : '#f5efe0';
-    $('#res-note').textContent = `Hypothetical: ${r}% p.a. compounded annually over ${y} year${y > 1 ? 's' : ''}. Not a forecast.`;
+    
+    $('#res-note').textContent = `Hypothetical: ${r}% p.a. over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
     $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
     $$('#calc-presets .chip').forEach(c => c.classList.toggle('active', +c.dataset.ret === r));
   };
@@ -940,38 +965,38 @@ function initInvest() {
   sel.addEventListener('change', apply);
   ['#calc-amt', '#calc-ret', '#calc-years'].forEach(s => $(s).addEventListener('input', calc));
   $('#calc-presets').addEventListener('click', e => { const b = e.target.closest('[data-ret]'); if (b) { $('#calc-ret').value = b.dataset.ret; calc(); } });
-  // prefill country in enquiry modal after it opens
+  
   document.addEventListener('click', e => {
     if (e.target.closest('.inv-enq, #calc-enq')) setTimeout(() => { const f = $('#e-country'); if (f && !f.value) f.value = cur.c.replace('Rest of world (USD)', '').replace('Other Eurozone country', ''); }, 0);
   });
   apply();
 }
-
 /* ------------------------------ INIT ------------------------------ */
 function init() {
-  initLoader();
-  initNav();
-  initHub();
-  renderCategories();
-  renderProducts(false);
-  renderOrigins();
-  renderTypes();
-  renderShapes();
-  renderStoneFilters();
-  renderStones();
-  initAnatomy();
-  initFourCs();
-  initFAQ();
-  renderOfficesTerms();
-  initModal();
-  initClicks();
-  initInvest();
-  initTilt();
-  initSparkles();
-  initReveals();
-  syncOrigin();
+  const safe = fn => { try { fn(); } catch (e) { console.error('[init]', e); } };
+  safe(() => initLoader());
+  safe(() => initNav());
+  safe(() => initHub());
+  safe(() => renderCategories());
+  safe(() => renderProducts(false));
+  safe(() => renderOrigins());
+  safe(() => renderTypes());
+  safe(() => renderShapes());
+  safe(() => renderStoneFilters());
+  safe(() => renderStones());
+  safe(() => initAnatomy());
+  safe(() => initFourCs());
+  safe(() => initFAQ());
+  safe(() => renderOfficesTerms());
+  safe(() => initModal());
+  safe(() => initClicks());
+  safe(() => initInvest());
+  safe(() => initTilt());
+  safe(() => initSparkles());
+  safe(() => initReveals());
+  safe(() => syncOrigin());
+  safe(() => ScrollTriggerRefresh());
   if (!hasGSAP) { const l = $('#loader'); if (l) l.style.display = 'none'; }
-  ScrollTriggerRefresh();
 }
 function ScrollTriggerRefresh() {
   if (typeof ScrollTrigger !== 'undefined') window.addEventListener('load', () => setTimeout(() => ScrollTrigger.refresh(), 600));
