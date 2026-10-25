@@ -450,6 +450,32 @@
                     <p class="text-xs text-[#a9a18b] leading-relaxed">This calculator specially is for monthly profit calculations only. The return is GURANTEED, calculated with annual compounding.</p>
                   </div>
                   <button class="btn btn-gold mt-auto self-start" id="calc-enq" data-enquire="Investor enquiry">Discuss this tier</button>
+                   <!-- Referral Commission Calculator Box -->
+<div class="glass p-6 md:p-10 mt-10" data-reveal>
+  <div class="max-w-xl mb-6">
+    <p class="eyebrow mb-3">Partner &amp; Referral Program</p>
+    <h4 class="font-display text-3xl mb-2">Earn <span class="italic gold-text">20% Commission</span> on Referrals</h4>
+    <p class="text-sm text-[#a9a18b] leading-relaxed">Refer an investor to our 10 lakh+ tiers and instantly calculate your 20% direct commission reward based on their invested capital.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-2 gap-10 items-center">
+    <div>
+      <label class="field-label" for="ref-amt">Referred Investment Amount <strong id="ref-amt-out" class="text-gold ml-2 text-base font-display"></strong></label>
+      <input id="ref-amt" type="range" min="10" max="1000" step="5" value="10" />
+      <div class="flex justify-between text-[.62rem] text-[#8f8878] mt-2"><span>₹10 Lakh minimum</span><span>₹10 Crore max</span></div>
+    </div>
+
+    <div class="flex flex-col">
+      <div class="glass p-6 text-center mb-4" style="border-color: rgba(110, 231, 168, 0.3);">
+        <p class="text-[.6rem] tracking-[.24em] uppercase text-[#8f8878] mb-2">Your 20% Direct Commission</p>
+        <p class="font-display text-4xl md:text-5xl" id="ref-comm-out" style="color: #6ee7a8;">-</p>
+        <p class="text-xs text-[#a9a18b] mt-2" id="ref-note">Earn 20% direct commission on any referred investment of ₹10 lakh and above.</p>
+      </div>
+      <button class="btn btn-gold self-start w-full sm:w-auto" id="ref-enq" data-enquire="Referral partner commission enquiry">Claim / Enquire Referral</button>
+    </div>
+  </div>
+</div>
+
                 </div>
               </div>
             </div>
