@@ -1098,6 +1098,84 @@ function initInvest() {
         g.textContent = money(totalGain, true);
         g.style.color = '#6ee7a8';
     }
+function initInvest() {
+  const sel = $('#inv-country'); if (!sel) return;
+  const fmtInr = lakh => lakh >= 100 ? `₹${+(lakh / 100).toFixed(2)} crore` : `₹${lakh} lakh`;
+  let cur = INVEST_COUNTRIES[0];
+
+  sel.innerHTML = INVEST_COUNTRIES.map((k, i) => `<option value="${i}">${k.c} · ${k.cur}${k.blocked ? ' — not available' : ''}</option>`).join('');
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const guess = tz.startsWith('Asia/Kolkata') || tz.startsWith('Asia/Calcutta') ? 'India' : tz.startsWith('Asia/Dubai') ? 'United Arab Emirates' : tz.startsWith('Europe/London') ? 'United Kingdom' : tz.startsWith('Europe/Istanbul') ? 'Türkiye' : tz.startsWith('America/') ? 'United States' : 'India';
+    sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
+  } catch (e) { sel.value = '0'; }
+
+  // Currency conversion fix (Using 'en-US' so numbers format with commas instead of dots)
+  const money = (inr, compact) => {
+    const v = inr / cur.rate;
+    try { 
+      return new Intl.NumberFormat('en-US', { 
+        style: 'currency', 
+        currency: cur.cur, 
+        maximumFractionDigits: 0, 
+        ...(compact && v >= 1e6 ? { notation: 'compact', maximumFractionDigits: 2 } : {}) 
+      }).format(v); 
+    } catch (e) { 
+      return cur.cur + ' ' + Math.round(v).toLocaleString(); 
+    }
+  };
+
+  const renderTiers = () => {
+    $('#tier-grid').innerHTML = INVEST_TIERS.map((t, i) => `
+      <article class="glass p-7 flex flex-col" data-tilt>
+        <div class="flex items-start justify-between mb-4"><span class="font-display text-5xl text-gold/30">0${i + 1}</span><span class="text-[.6rem] tracking-[.2em] uppercase text-[#8f8878]">${fmtInr(t.lakh)}</span></div>
+        <h4 class="font-display text-3xl mb-1 tilt-pop-sm">${t.name}</h4>
+        <p class="font-display text-4xl gold-text mb-3">${money(t.lakh * 1e5)}</p>
+        ${cur.cur !== 'INR' ? `<p class="text-[.68rem] text-[#6f6757] -mt-2 mb-3">&asymp; ₹${(t.lakh * 1e5).toLocaleString('en-IN')}</p>` : ''}
+        <p class="text-sm text-[#a9a18b] leading-relaxed mb-6 flex-1">${t.blurb}</p>
+        <button class="btn btn-ghost btn-sm self-start inv-enq" data-enquire="Investor enquiry — ${t.name} tier (${fmtInr(t.lakh)} / ${money(t.lakh * 1e5)}) · ${cur.c}">Enquire</button>
+      </article>`).join('');
+  };
+
+  const calc = () => {
+    let lakh = +$('#calc-amt').value;
+    
+    // --- Rule: Minimum 10 Lakhs restriction ---
+    if (lakh < 10) {
+        lakh = 10; 
+        if ($('#calc-amt')) $('#calc-amt').value = 10; 
+    }
+
+    const y = +$('#calc-years').value;
+    const inr = lakh * 1e5;
+    
+    // Fixed Scaling Payout Model: ₹8 lakh/month per ₹10 lakh invested
+    const monthlyPayoutPerLakh = 80000; 
+    const monthlyPayout = lakh * monthlyPayoutPerLakh;
+    
+    const totalMonths = y * 12;
+    const totalGain = monthlyPayout * totalMonths;
+    const end = inr + totalGain;
+
+    // UI Updates for Main Calculator
+    $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
+    
+    if ($('#calc-ret-out')) {
+        $('#calc-ret-out').textContent = `Fixed Scaling Payout Model`;
+    }
+    
+    $('#res-in').textContent = money(inr, true);
+    $('#res-out').textContent = money(end, true);
+    
+    if ($('#res-monthly')) {
+        $('#res-monthly').textContent = money(monthlyPayout, true);
+    }
+
+    const g = $('#res-gain'); 
+    if (g) {
+        g.textContent = money(totalGain, true);
+        g.style.color = '#6ee7a8';
+    }
     
     if ($('#res-note')) {
         $('#res-note').textContent = `Fixed Payout: ₹8 lakh/month per ₹10 lakh invested over ${y} year${y > 1 ? 's' : ''}. Est. Monthly Payout: ${money(monthlyPayout, true)}`;
@@ -1111,20 +1189,25 @@ function initInvest() {
     const refAmtEl = $('#ref-amt');
     const refCommEl = $('#ref-comm-out');
     
-    const validRefLakh = refAmtEl ? Math.max(10, +refAmtEl.value) : lakh;
-    if (refAmtEl && +refAmtEl.value < 10) refAmtEl.value = 10;
-    
-    const refTotalInr = validRefLakh * 1e5;
-    const commissionInr = refTotalInr * 0.20; // 20% Commission
+    if (refAmtEl) {
+      let refLakh = +refAmtEl.value;
+      if (refLakh < 10) {
+        refLakh = 10;
+        refAmtEl.value = 10;
+      }
+      
+      const refTotalInr = refLakh * 1e5;
+      const commissionInr = refTotalInr * 0.20; // 20% Commission
 
-    if ($('#ref-amt-out')) {
-      $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(validRefLakh)})` : '');
-    }
-    if (refCommEl) {
-      refCommEl.textContent = money(commissionInr, true);
-    }
-    if ($('#ref-note')) {
-      $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
+      if ($('#ref-amt-out')) {
+        $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(refLakh)})` : '');
+      }
+      if (refCommEl) {
+        refCommEl.textContent = money(commissionInr, true);
+      }
+      if ($('#ref-note')) {
+        $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
+      }
     }
   };
 
@@ -1144,7 +1227,7 @@ function initInvest() {
 
   sel.addEventListener('change', apply);
   
-  // Return slider listener hata diya hai kyunki slider hi remove karna hai
+  // Event Listeners for inputs
   $('#calc-amt').addEventListener('input', calc);
   $('#calc-years').addEventListener('change', calc);
   
@@ -1158,7 +1241,6 @@ function initInvest() {
   });
   apply();
 }
-
 
 /* ------------------------------ INIT ------------------------------ */
 function init() {
