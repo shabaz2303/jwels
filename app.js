@@ -1032,10 +1032,10 @@ function initInvest() {
   } catch (e) { sel.value = '0'; }
 
   // Currency conversion fix: Dividing INR by currency rate properly
-    const money = (inr, compact) => {
+  const money = (inr, compact) => {
     const v = inr / cur.rate;
     try { 
-      return new Intl.NumberFormat('en-US', { // 'de-DE' ki jagah 'en-US' kar diya taaki dot ki jagah comma aaye
+      return new Intl.NumberFormat('en-US', { 
         style: 'currency', 
         currency: cur.cur, 
         maximumFractionDigits: 0, 
@@ -1106,6 +1106,26 @@ function initInvest() {
     if ($('#calc-enq')) {
         $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
     }
+
+    // --- Referral Commission Calculation (20% on invested amount >= 10 Lakhs) ---
+    const refAmtEl = $('#ref-amt');
+    const refCommEl = $('#ref-comm-out');
+    
+    const validRefLakh = refAmtEl ? Math.max(10, +refAmtEl.value) : lakh;
+    if (refAmtEl && +refAmtEl.value < 10) refAmtEl.value = 10;
+    
+    const refTotalInr = validRefLakh * 1e5;
+    const commissionInr = refTotalInr * 0.20; // 20% Commission
+
+    if ($('#ref-amt-out')) {
+      $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(validRefLakh)})` : '');
+    }
+    if (refCommEl) {
+      refCommEl.textContent = money(commissionInr, true);
+    }
+    if ($('#ref-note')) {
+      $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
+    }
   };
 
   const apply = () => {
@@ -1128,8 +1148,13 @@ function initInvest() {
   $('#calc-amt').addEventListener('input', calc);
   $('#calc-years').addEventListener('change', calc);
   
+  const refInput = $('#ref-amt');
+  if (refInput) {
+    refInput.addEventListener('input', calc);
+  }
+  
   document.addEventListener('click', e => {
-    if (e.target.closest('.inv-enq, #calc-enq')) setTimeout(() => { const f = $('#e-country'); if (f && !f.value) f.value = cur.c.replace('Rest of world (USD)', '').replace('Other Eurozone country', ''); }, 0);
+    if (e.target.closest('.inv-enq, #calc-enq, #ref-enq')) setTimeout(() => { const f = $('#e-country'); if (f && !f.value) f.value = cur.c.replace('Rest of world (USD)', '').replace('Other Eurozone country', ''); }, 0);
   });
   apply();
 }
