@@ -1107,26 +1107,23 @@ function initInvest() {
         $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
     }
 
-    // --- Referral Commission Calculation (20% on invested amount >= 10 Lakhs) ---
-    const refAmtEl = $('#ref-amt');
-    const refCommEl = $('#ref-comm-out');
-    
-    const validRefLakh = refAmtEl ? Math.max(10, +refAmtEl.value) : lakh;
-    if (refAmtEl && +refAmtEl.value < 10) refAmtEl.value = 10;
-    
-    const refTotalInr = validRefLakh * 1e5;
-    const commissionInr = refTotalInr * 0.20; // 20% Commission
+    // Referral Commission Calculator Logic
+const refAmt = document.getElementById('ref-amt');
+const refAmtOut = document.getElementById('ref-amt-out');
+const refCommOut = document.getElementById('ref-comm-out');
 
-    if ($('#ref-amt-out')) {
-      $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(validRefLakh)})` : '');
+refAmt.addEventListener('input', function() {
+    const amount = parseInt(this.value) * 100000; // Convert Lakhs to absolute value
+    refAmtOut.textContent = `₹${(amount / 100000).toFixed(0)} Lakh`; // Update the displayed slider value
+
+    if (amount >= 1000000) {
+        const commission = amount * 0.20;
+        const formattedComm = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(commission);
+        refCommOut.textContent = `₹${formattedComm}`;
+    } else {
+        refCommOut.textContent = '-'; // Reset to '-' if below ₹10 Lakh minimum
     }
-    if (refCommEl) {
-      refCommEl.textContent = money(commissionInr, true);
-    }
-    if ($('#ref-note')) {
-      $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
-    }
-  };
+});
 
   const apply = () => {
     cur = INVEST_COUNTRIES[+sel.value];
