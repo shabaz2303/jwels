@@ -1031,7 +1031,7 @@ function initInvest() {
     sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
   } catch (e) { sel.value = '0'; }
 
-  // Currency conversion fix: Dividing INR by currency rate properly
+  // Currency conversion fix (Using 'en-US' so numbers format with commas instead of dots)
   const money = (inr, compact) => {
     const v = inr / cur.rate;
     try { 
@@ -1078,10 +1078,9 @@ function initInvest() {
     const totalGain = monthlyPayout * totalMonths;
     const end = inr + totalGain;
 
-    // UI Updates
+    // UI Updates for Main Calculator
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
     
-    // Return rate section hidden or showing fixed payout label
     if ($('#calc-ret-out')) {
         $('#calc-ret-out').textContent = `Fixed Scaling Payout Model`;
     }
@@ -1107,23 +1106,31 @@ function initInvest() {
         $('#calc-enq').setAttribute('data-enquire', `Investor enquiry — ${fmtInr(lakh)} / ${money(inr)} · ${cur.c}`);
     }
 
-    // Referral Commission Calculator Logic
-const refAmt = document.getElementById('ref-amt');
-const refAmtOut = document.getElementById('ref-amt-out');
-const refCommOut = document.getElementById('ref-comm-out');
+    // --- Referral Commission Calculation (20% on invested amount >= 10 Lakhs) ---
+    const refAmtEl = $('#ref-amt');
+    const refCommEl = $('#ref-comm-out');
+    
+    if (refAmtEl) {
+      let refLakh = +refAmtEl.value;
+      if (refLakh < 10) {
+        refLakh = 10;
+        refAmtEl.value = 10;
+      }
+      
+      const refTotalInr = refLakh * 1e5;
+      const commissionInr = refTotalInr * 0.20; // 20% Commission
 
-refAmt.addEventListener('input', function() {
-    const amount = parseInt(this.value) * 100000; // Convert Lakhs to absolute value
-    refAmtOut.textContent = `₹${(amount / 100000).toFixed(0)} Lakh`; // Update the displayed slider value
-
-    if (amount >= 1000000) {
-        const commission = amount * 0.20;
-        const formattedComm = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(commission);
-        refCommOut.textContent = `₹${formattedComm}`;
-    } else {
-        refCommOut.textContent = '-'; // Reset to '-' if below ₹10 Lakh minimum
+      if ($('#ref-amt-out')) {
+        $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(refLakh)})` : '');
+      }
+      if (refCommEl) {
+        refCommEl.textContent = money(commissionInr, true);
+      }
+      if ($('#ref-note')) {
+        $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
+      }
     }
-});
+  };
 
   const apply = () => {
     cur = INVEST_COUNTRIES[+sel.value];
@@ -1141,7 +1148,7 @@ refAmt.addEventListener('input', function() {
 
   sel.addEventListener('change', apply);
   
-  // Return slider listener hata diya hai kyunki slider hi remove karna hai
+  // Event Listeners for inputs
   $('#calc-amt').addEventListener('input', calc);
   $('#calc-years').addEventListener('change', calc);
   
@@ -1155,6 +1162,7 @@ refAmt.addEventListener('input', function() {
   });
   apply();
 }
+
 
 
 /* ------------------------------ INIT ------------------------------ */
