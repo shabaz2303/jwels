@@ -1031,7 +1031,7 @@ function initInvest() {
     sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
   } catch (e) { sel.value = '0'; }
 
-  // Currency conversion fix (Using 'en-US' so numbers format with commas instead of dots)
+  // Currency conversion fix: Dividing INR by currency rate properly
   const money = (inr, compact) => {
     const v = inr / cur.rate;
     try { 
@@ -1078,9 +1078,10 @@ function initInvest() {
     const totalGain = monthlyPayout * totalMonths;
     const end = inr + totalGain;
 
-    // UI Updates for Main Calculator
+    // UI Updates
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
     
+    // Return rate section hidden or showing fixed payout label
     if ($('#calc-ret-out')) {
         $('#calc-ret-out').textContent = `Fixed Scaling Payout Model`;
     }
@@ -1110,25 +1111,20 @@ function initInvest() {
     const refAmtEl = $('#ref-amt');
     const refCommEl = $('#ref-comm-out');
     
-    if (refAmtEl) {
-      let refLakh = +refAmtEl.value;
-      if (refLakh < 10) {
-        refLakh = 10;
-        refAmtEl.value = 10;
-      }
-      
-      const refTotalInr = refLakh * 1e5;
-      const commissionInr = refTotalInr * 0.20; // 20% Commission
+    const validRefLakh = refAmtEl ? Math.max(10, +refAmtEl.value) : lakh;
+    if (refAmtEl && +refAmtEl.value < 10) refAmtEl.value = 10;
+    
+    const refTotalInr = validRefLakh * 1e5;
+    const commissionInr = refTotalInr * 0.20; // 20% Commission
 
-      if ($('#ref-amt-out')) {
-        $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(refLakh)})` : '');
-      }
-      if (refCommEl) {
-        refCommEl.textContent = money(commissionInr, true);
-      }
-      if ($('#ref-note')) {
-        $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
-      }
+    if ($('#ref-amt-out')) {
+      $('#ref-amt-out').textContent = money(refTotalInr) + (cur.cur !== 'INR' ? ` (${fmtInr(validRefLakh)})` : '');
+    }
+    if (refCommEl) {
+      refCommEl.textContent = money(commissionInr, true);
+    }
+    if ($('#ref-note')) {
+      $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
     }
   };
 
@@ -1148,7 +1144,7 @@ function initInvest() {
 
   sel.addEventListener('change', apply);
   
-  // Event Listeners for inputs
+  // Return slider listener hata diya hai kyunki slider hi remove karna hai
   $('#calc-amt').addEventListener('input', calc);
   $('#calc-years').addEventListener('change', calc);
   
@@ -1162,7 +1158,6 @@ function initInvest() {
   });
   apply();
 }
-
 
 
 /* ------------------------------ INIT ------------------------------ */
