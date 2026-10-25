@@ -6,9 +6,6 @@
 'use strict';
 
 /* ------------------------------ CONFIG ------------------------------ */
-// Replace with your real inbox before deploying. Enquiries open the visitor's
-// email app pre-filled (GitHub Pages has no backend). To use a form service
-// instead (Formspree, Web3Forms, etc.), swap submitEnquiry() below.
 const CONFIG = {
   brand: 'Surani & Sons',
   email: 'sales@suranijwelsanddiamonds.online'
@@ -18,7 +15,7 @@ const CONFIG = {
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 let hasGSAP = typeof window.gsap !== 'undefined';
-const reduceMotion = false; // animations always on (OS 'reduce motion' setting is ignored on purpose)
+const reduceMotion = false; 
 const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const state = { mode: 'retail', cat: null, mat: null, origin: 'all', shape: null, colorTab: 'all', clarityTab: 'all' };
 
@@ -169,7 +166,7 @@ const FAQS = [
   { q: 'What are your wholesale minimums and terms?', a: 'Minimums vary by category — finished jewelry, loose stones, parcels and melee each have their own thresholds. Verified trade customers can discuss volume tiers, white-label manufacturing and payment structures such as escrow. Share your business details through the Enquire form and we will respond with a written quotation.' },
   { q: 'Can I buy online?', a: 'Not directly. Because each stone and piece is individually graded, sized and insured, we handle every purchase through a personal consultation or written quotation rather than an online checkout. Use Explore to browse and Enquire to start the conversation.' },
   { q: 'Do you offer custom and bespoke jewelry?', a: 'Yes. Our studios produce bespoke pieces from sketch and 3D render through casting, setting and finishing. Timelines depend on complexity and stone availability and are confirmed with your quotation.' },
-  { q: 'How do I verify that a stone is natural or lab-grown?', a: 'Only laboratory instruments can reliably tell them apart. Every stone we sell comes with a grading report stating its origin. We recommend independent verification for any diamond purchased elsewhere.' }
+  { q: 'How did you verify that a stone is natural or lab-grown?', a: 'Only laboratory instruments can reliably tell them apart. Every stone we sell comes with a grading report stating its origin. We recommend independent verification for any diamond purchased elsewhere.' }
 ];
 
 const OFFICES = [
@@ -216,8 +213,6 @@ function shapeIcon(name) {
 }
 
 /* ------------------------------ LIBRARY LOADER ------------------------------ */
-// GSAP is loaded from /libs/ first (put gsap.min.js + ScrollTrigger.min.js there for 100% reliability),
-// then from jsDelivr, then cdnjs. The page renders immediately and never waits on a slow CDN.
 function loadScript(src, ms) {
   return new Promise(resolve => {
     let done = false;
@@ -261,7 +256,7 @@ function initLoader() {
   };
   const loaded = new Promise(r => { if (document.readyState === 'complete') setTimeout(r, 600); else window.addEventListener('load', () => setTimeout(r, 900)); });
   Promise.all([loaded, libsReady]).then(finish);
-  setTimeout(finish, 5200); // safety net
+  setTimeout(finish, 5200); 
 }
 
 function heroIntro() {
@@ -511,7 +506,6 @@ function stoneOutline(shape) {
   return { pts, kind: 'brilliant', cy: 100, tf: .56 };
 }
 
-// Top-view faceted diamond, drawn per shape and tinted by colour. Illustrative rendering.
 function stoneArt(s) {
   const o = stoneOutline(s.shape), P = o.pts, cx = 100, cy = o.cy, uid = 'st' + s.id;
   const [c0, c1, c2] = STONE_TINTS[s.tint] || STONE_TINTS.white;
@@ -959,11 +953,9 @@ function initReveals() {
     const g = $(sel); if (!g) return;
     ScrollTrigger.create({ trigger: g, start: 'top 85%', once: true, onEnter: () => animateIn($$(':scope > *', g), { stagger: .08 }) });
   });
-  // kinetic section titles
   gsap.utils.toArray('.section-title').forEach(t => {
     gsap.from(t, { clipPath: 'inset(0 0 100% 0)', y: 40, duration: 1.1, ease: 'power4.out', clearProps: 'clipPath,transform', scrollTrigger: { trigger: t, start: 'top 90%', once: true } });
   });
-  // parallax glows and hero gem
   gsap.to('.hero-glow', { yPercent: 25, ease: 'none', scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true } });
   gsap.to('.hub-panel .bg', { yPercent: 8, ease: 'none', scrollTrigger: { trigger: '#hub', start: 'top bottom', end: 'bottom top', scrub: true } });
   if (fineHover) {
@@ -976,8 +968,6 @@ function initReveals() {
 }
 
 /* ------------------------------ INVEST: TIERS + CALCULATOR ------------------------------ */
-// Indicative rates only (INR per 1 unit of currency). Update as needed; real quotations confirm final amounts.
-// Countries with `blocked: true` cannot view the programme (compliance policy). Edit freely.
 const INVEST_COUNTRIES = [
   { c: 'India', cur: 'INR', rate: 1, loc: 'en-IN' },
   { c: 'United States', cur: 'USD', rate: 88, loc: 'en-US' },
@@ -1031,7 +1021,6 @@ function initInvest() {
     sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
   } catch (e) { sel.value = '0'; }
 
-  // Currency conversion fix: Dividing INR by currency rate properly
   const money = (inr, compact) => {
     const v = inr / cur.rate;
     try { 
@@ -1060,8 +1049,6 @@ function initInvest() {
 
   const calc = () => {
     let lakh = +$('#calc-amt').value;
-    
-    // --- Rule: Minimum 10 Lakhs restriction ---
     if (lakh < 10) {
         lakh = 10; 
         if ($('#calc-amt')) $('#calc-amt').value = 10; 
@@ -1078,99 +1065,11 @@ function initInvest() {
     const totalGain = monthlyPayout * totalMonths;
     const end = inr + totalGain;
 
-    // UI Updates
     $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
-    
-    // Return rate section hidden or showing fixed payout label
-    if ($('#calc-ret-out')) {
-        $('#calc-ret-out').textContent = `Fixed Scaling Payout Model`;
-    }
     
     $('#res-in').textContent = money(inr, true);
     $('#res-out').textContent = money(end, true);
     
-    if ($('#res-monthly')) {
-        $('#res-monthly').textContent = money(monthlyPayout, true);
-    }
-
-    const g = $('#res-gain'); 
-    if (g) {
-        g.textContent = money(totalGain, true);
-        g.style.color = '#6ee7a8';
-    }
-function initInvest() {
-  const sel = $('#inv-country'); if (!sel) return;
-  const fmtInr = lakh => lakh >= 100 ? `₹${+(lakh / 100).toFixed(2)} crore` : `₹${lakh} lakh`;
-  let cur = INVEST_COUNTRIES[0];
-
-  sel.innerHTML = INVEST_COUNTRIES.map((k, i) => `<option value="${i}">${k.c} · ${k.cur}${k.blocked ? ' — not available' : ''}</option>`).join('');
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-    const guess = tz.startsWith('Asia/Kolkata') || tz.startsWith('Asia/Calcutta') ? 'India' : tz.startsWith('Asia/Dubai') ? 'United Arab Emirates' : tz.startsWith('Europe/London') ? 'United Kingdom' : tz.startsWith('Europe/Istanbul') ? 'Türkiye' : tz.startsWith('America/') ? 'United States' : 'India';
-    sel.value = String(INVEST_COUNTRIES.findIndex(k => k.c === guess));
-  } catch (e) { sel.value = '0'; }
-
-  // Currency conversion fix (Using 'en-US' so numbers format with commas instead of dots)
-  const money = (inr, compact) => {
-    const v = inr / cur.rate;
-    try { 
-      return new Intl.NumberFormat('en-US', { 
-        style: 'currency', 
-        currency: cur.cur, 
-        maximumFractionDigits: 0, 
-        ...(compact && v >= 1e6 ? { notation: 'compact', maximumFractionDigits: 2 } : {}) 
-      }).format(v); 
-    } catch (e) { 
-      return cur.cur + ' ' + Math.round(v).toLocaleString(); 
-    }
-  };
-
-  const renderTiers = () => {
-    $('#tier-grid').innerHTML = INVEST_TIERS.map((t, i) => `
-      <article class="glass p-7 flex flex-col" data-tilt>
-        <div class="flex items-start justify-between mb-4"><span class="font-display text-5xl text-gold/30">0${i + 1}</span><span class="text-[.6rem] tracking-[.2em] uppercase text-[#8f8878]">${fmtInr(t.lakh)}</span></div>
-        <h4 class="font-display text-3xl mb-1 tilt-pop-sm">${t.name}</h4>
-        <p class="font-display text-4xl gold-text mb-3">${money(t.lakh * 1e5)}</p>
-        ${cur.cur !== 'INR' ? `<p class="text-[.68rem] text-[#6f6757] -mt-2 mb-3">&asymp; ₹${(t.lakh * 1e5).toLocaleString('en-IN')}</p>` : ''}
-        <p class="text-sm text-[#a9a18b] leading-relaxed mb-6 flex-1">${t.blurb}</p>
-        <button class="btn btn-ghost btn-sm self-start inv-enq" data-enquire="Investor enquiry — ${t.name} tier (${fmtInr(t.lakh)} / ${money(t.lakh * 1e5)}) · ${cur.c}">Enquire</button>
-      </article>`).join('');
-  };
-
-  const calc = () => {
-    let lakh = +$('#calc-amt').value;
-    
-    // --- Rule: Minimum 10 Lakhs restriction ---
-    if (lakh < 10) {
-        lakh = 10; 
-        if ($('#calc-amt')) $('#calc-amt').value = 10; 
-    }
-
-    const y = +$('#calc-years').value;
-    const inr = lakh * 1e5;
-    
-    // Fixed Scaling Payout Model: ₹8 lakh/month per ₹10 lakh invested
-    const monthlyPayoutPerLakh = 80000; 
-    const monthlyPayout = lakh * monthlyPayoutPerLakh;
-    
-    const totalMonths = y * 12;
-    const totalGain = monthlyPayout * totalMonths;
-    const end = inr + totalGain;
-
-    // UI Updates for Main Calculator
-    $('#calc-amt-out').textContent = money(inr) + (cur.cur !== 'INR' ? ` (${fmtInr(lakh)})` : '');
-    
-    if ($('#calc-ret-out')) {
-        $('#calc-ret-out').textContent = `Fixed Scaling Payout Model`;
-    }
-    
-    $('#res-in').textContent = money(inr, true);
-    $('#res-out').textContent = money(end, true);
-    
-    if ($('#res-monthly')) {
-        $('#res-monthly').textContent = money(monthlyPayout, true);
-    }
-
     const g = $('#res-gain'); 
     if (g) {
         g.textContent = money(totalGain, true);
@@ -1205,9 +1104,6 @@ function initInvest() {
       if (refCommEl) {
         refCommEl.textContent = money(commissionInr, true);
       }
-      if ($('#ref-note')) {
-        $('#ref-note').textContent = `Earn 20% direct commission on any referred investment of ₹10 lakh and above.`;
-      }
     }
   };
 
@@ -1226,8 +1122,6 @@ function initInvest() {
   };
 
   sel.addEventListener('change', apply);
-  
-  // Event Listeners for inputs
   $('#calc-amt').addEventListener('input', calc);
   $('#calc-years').addEventListener('change', calc);
   
@@ -1265,7 +1159,6 @@ function init() {
   safe(() => initTilt());
   safe(() => initSparkles());
   safe(() => syncOrigin());
-  // scroll animations start once GSAP is available (page is already fully usable without it)
   libsReady.then(ok => { if (ok) { safe(() => initReveals()); window.addEventListener('load', () => setTimeout(() => { if (window.ScrollTrigger) ScrollTrigger.refresh(); }, 600)); } });
 }
 
